@@ -18,11 +18,13 @@
 
 package qinq.resource;
 
+import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Game
- * 
+ *
  * @author az
  * @version 1.0, 2016-06-20
  *
@@ -31,13 +33,23 @@ public class Player extends GameObject {
   /**
    * The nick name the player will go by during the game
    */
-  private String       strName;
+  private String            strName;
   /**
    * List of Answers for the current Game/Round
    *
    * TODO decide whether game or round
    */
-  private List<Answer> answers;
+  private List<Answer>      answers;
+  /**
+   * Socket used to connect to the player
+   */
+  private InetSocketAddress socket;
+
+  public Player(String strName, InetSocketAddress socket) {
+    this.answers = new ArrayList<Answer>();
+    this.strName = strName;
+    this.socket = socket;
+  }
 
   /**
    * Get player name

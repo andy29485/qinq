@@ -40,6 +40,13 @@ public class Question extends GameObject {
    */
   private static int   nAnswers;
 
+  public Question(String strValue, Player... players) {
+    this.strValue = strValue;
+    for (Player player : players) {
+      this.lAnswers.add(new Answer(player, this));
+    }
+  }
+
   /**
    * Get the question
    *

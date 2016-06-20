@@ -22,6 +22,14 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.handler.DefaultHandler;
+
+import qinq.application.GameServer;
+
 /**
  * Game
  *
@@ -39,17 +47,24 @@ public class Game extends GameObject {
    */
   private Round        currentRound;
   /**
-   * Questions that can be used in the game.
+   * The game server that is hosting the game/
    */
-  private List<String> questions;
+  private GameServer   server;
 
   /**
    * @param questions
    *          that can be used to play the game
    */
-  public Game(List<String> questions) {
+  public Game(GameServer server) {
     this.players = new ArrayList<Player>();
-    this.questions = questions;
+    this.server = server;
+    server.addHandle(new DefaultHandler() {
+      @Override
+      public void handle(String target, Request baseRequest,
+          HttpServletRequest request, HttpServletResponse response) {
+        // TODO handle requests
+      }
+    });
   }
 
   /**
@@ -73,8 +88,8 @@ public class Game extends GameObject {
   /**
    * Start the game
    */
-  public void start() {
-    this.currentRound = new Round(0, "Round 1", this.players, this.questions);
+  public void start(List<String> questions) {
+    this.currentRound = new Round(0, "Round 1", this.players, questions);
     // TODO
   }
 
@@ -89,7 +104,7 @@ public class Game extends GameObject {
 
   /**
    * Get the current round.
-   * 
+   *
    * @return the current round
    */
   public Round getRound() {

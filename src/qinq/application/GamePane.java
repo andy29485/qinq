@@ -18,16 +18,18 @@
 
 package qinq.application;
 
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import qinq.resource.Game;
 
 public class GamePane extends BorderPane {
   private GameServer server;
   private Label      addressLabel;
 
-  public GamePane(GameServer server) {
+  public GamePane(GameServer server, Game game) {
     this.server = server;
     this.addressLabel = new Label(server.getAddress());
     HBox top = new HBox(5);
@@ -36,9 +38,12 @@ public class GamePane extends BorderPane {
     Button buttonOpt = new Button("Options");
     Button buttonExit = new Button("Exit");
 
+    this.addressLabel.setId("address-label");
+    top.setId("header");
     top.getChildren().add(new Label("Go to: "));
     top.getChildren().add(this.addressLabel);
     top.getChildren().add(new Label(" to start playing"));
+    top.setAlignment(Pos.CENTER);
 
     buttonStart.setOnAction(e -> {
       // TODO start game
@@ -49,13 +54,15 @@ public class GamePane extends BorderPane {
     });
 
     buttonExit.setOnAction(e -> {
-      // TODO stop server
+      this.server.stop();
       System.exit(0);
     });
     bottom.getChildren().add(buttonStart);
     bottom.getChildren().add(buttonOpt);
     bottom.getChildren().add(buttonExit);
+    bottom.setAlignment(Pos.CENTER);
 
     this.setTop(top);
+    this.setBottom(bottom);
   }
 }

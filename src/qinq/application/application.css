@@ -1,3 +1,10 @@
-/* JavaFX CSS - Leave this comment until you have at least create one
- * rule which uses -fx-Property
- */
+Label {
+  -fx-font-size: 20;
+}
+#header {
+  -fx-font-weight: 700;
+  -fx-pref-width: 100%;
+}
+#address-label {
+  -fx-background-color: #BBB;
+}

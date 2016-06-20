@@ -19,19 +19,31 @@
 package qinq.application;
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+import qinq.resource.Game;
 
 public class Main extends Application {
   @Override
   public void start(Stage primaryStage) {
     try {
       GameServer server = new GameServer();
-      Pane root = new GamePane(server);// TODO use different root
-      Scene scene = new Scene(root, 400, 400);
+      Game game = new Game(server);
+      Pane root = new GamePane(server, game);
+
+      primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+        @Override
+        public void handle(final WindowEvent event) {
+          server.stop();
+        }
+      });
+
+      Scene scene = new Scene(root, 600, 600);
       scene.getStylesheets()
-          .add(getClass().getResource("application.css").toExternalForm());
+          .add(this.getClass().getResource("application.css").toExternalForm());
       primaryStage.setScene(scene);
       primaryStage.show();
     }

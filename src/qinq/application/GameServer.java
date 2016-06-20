@@ -18,39 +18,70 @@
 
 package qinq.application;
 
+import java.net.InetAddress;
+import java.net.URL;
+import java.net.UnknownHostException;
+
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 
 public class GameServer {
+  private Server      server;
+  private HandlerList handlers;
+
   public GameServer() {
-    Server server = new Server(8070);
+    this.server = new Server(8070);
 
     ResourceHandler resource_handler = new ResourceHandler();
     resource_handler.setDirectoriesListed(false);
+    URL baseUrl = this.getClass().getResource("html");
+    resource_handler.setResourceBase(baseUrl.toExternalForm());
     resource_handler.setWelcomeFiles(new String[] { "index.html" });
 
-    resource_handler.setResourceBase(".");
-
-    HandlerList handlers = new HandlerList();
-    handlers
-        .setHandlers(new Handler[] { resource_handler, new DefaultHandler() });
-    server.setHandler(handlers);
+    handlers = new HandlerList();
+    handlers.addHandler(resource_handler);
+    handlers.addHandler(new DefaultHandler());
+    this.server.setHandler(handlers);
 
     try {
-      server.start();
-      server.join();
+      this.server.start();
     }
     catch (Exception e) {
-      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+
+  public void stop() {
+    try {
+      this.server.stop();
+      this.server.join();
+    }
+    catch (Exception e) {
       e.printStackTrace();
     }
   }
 
   public String getAddress() {
-    // TODO
-    return "";
+    if (((ServerConnector) this.server.getConnectors()[0])
+        .getLocalPort() == -1) {
+      return "There was an error...";
+    }
+    try {
+      return String.format("%s:%d", InetAddress.getLocalHost().getHostAddress(),
+          ((ServerConnector) this.server.getConnectors()[0]).getLocalPort());
+    }
+    catch (UnknownHostException e) {
+      e.printStackTrace();
+      return "Unknown";
+    }
+  }
+
+  public void addHandle(Handler handler) {
+    // handlers.addHandler(resource_handler);
+
   }
 }

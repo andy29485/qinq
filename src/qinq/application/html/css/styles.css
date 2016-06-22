@@ -1,4 +1,7 @@
 @CHARSET "UTF-8";
+header {
+	alignmetn: center;
+}
 body {
 	background: black;
 	color: white;

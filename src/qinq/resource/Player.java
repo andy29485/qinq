@@ -34,6 +34,10 @@ public class Player extends GameObject {
    */
   private String       strName;
   /**
+   * The ip used to connect, primarily used to reconnect
+   */
+  private String       strIp;
+  /**
    * List of Answers for the current Game/Round
    *
    * TODO decide whether game or round
@@ -76,7 +80,7 @@ public class Player extends GameObject {
 
   /**
    * Get the answers a player still has to answer
-   * 
+   *
    * @return the answers
    */
   public List<Answer> getAnswers() {
@@ -108,6 +112,25 @@ public class Player extends GameObject {
    */
   public void useVote() {
     this.nVotes--;
+  }
+
+  /**
+   * Get the player IP address
+   * 
+   * @return the IP to set
+   */
+  public String getIp() {
+    return this.strIp;
+  }
+
+  /**
+   * Set the player IP address
+   * 
+   * @param strIp
+   *          the IP to set
+   */
+  public void setIp(String strIp) {
+    this.strIp = strIp;
   }
 
 }

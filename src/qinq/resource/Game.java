@@ -51,14 +51,18 @@ public class Game extends GameObject {
    *
    * @param strName
    *          name for the player
-   * @param socket
-   *          socket to connect to the player's device
+   * @param ip
+   *          used to connect/reconnect
    * @return whether the player has be created successfully
    */
-  public int addPlayer(String strName) {
+  public int addPlayer(String strName, String ip) {
     for (Player player : this.players) {
-      if (player.getName().equalsIgnoreCase(strName))
-        return -1;
+      if (player.getName().equalsIgnoreCase(strName)) {
+        if (player.getIp().equalsIgnoreCase(ip))
+          return player.getID();
+        else
+          return -1;
+      }
     }
     Player p = new Player(strName);
     this.players.add(p);

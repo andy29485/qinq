@@ -41,11 +41,22 @@ import qinq.resource.Answer;
 import qinq.resource.Game;
 import qinq.resource.Player;
 
+/**
+ * Class that is responsible for managing the web interface of the game.
+ *
+ * @author az
+ * @version 1.0, 2016-06-22
+ *
+ */
 public class GameServer {
   private Server server;
   private Game   game;
 
+  /**
+   * Create an instance of the game server to use
+   */
   public GameServer() {
+    // TODO allow setting of custom ports?
     this.server = new Server(8070);
     // this.server.addConnector(new ServerConnector(this.server));
 
@@ -67,6 +78,9 @@ public class GameServer {
     }
   }
 
+  /**
+   * Stop server from hosting
+   */
   public void stop() {
     try {
       this.server.stop();
@@ -77,6 +91,11 @@ public class GameServer {
     }
   }
 
+  /**
+   * Get the IP address and port to join the game
+   *
+   * @return string containing the address/port of the website part of the game
+   */
   public String getAddress() {
     if (((ServerConnector) this.server.getConnectors()[0])
         .getLocalPort() == -1) {
@@ -92,10 +111,23 @@ public class GameServer {
     }
   }
 
+  /**
+   * Attach the game instance to the server
+   *
+   * @param game,
+   *          the game accociated with this server
+   */
   public void setGame(Game game) {
     this.game = game;
   }
 
+  /**
+   * Class that handles what happens when a request is sent.
+   *
+   * For this particular thing, I assume that an ajax post, containing json data
+   * is sent.
+   *
+   */
   class MyHandler extends AbstractHandler {
     @Override
     public void handle(String target, Request baseRequest,
@@ -131,10 +163,13 @@ public class GameServer {
         case "create user":
           id = g.addPlayer(json.getString("name").toUpperCase(),
               request.getRemoteAddr());
-          if (id != -1)
+          if (id != -1) {
             jsonOut.put("created", "true");
-          else
+            jsonOut.put("color", g.getPlayerById(id).getColor());
+          }
+          else {
             jsonOut.put("created", "false");
+          }
           jsonOut.put("name", json.getString("name").toUpperCase());
           jsonOut.put("id", id);
           break;
@@ -155,7 +190,10 @@ public class GameServer {
         case "get state":
           id = Integer.valueOf(json.getString("id"));
           p = g.getPlayerById(id);
-          time = g.getRound().getTime();
+          if (g.getRound() != null)
+            time = g.getRound().getTime();
+          else
+            time = 0;
           if (json.getString("state").equalsIgnoreCase("waiting")) {
             if (p.getAnswers().size() > 0) {
               a = p.getAnswers().get(0);
@@ -164,7 +202,8 @@ public class GameServer {
               jsonOut.put("aid", a.getID());
               jsonOut.put("question", a.getQuestion());
             }
-            else if (GameServer.this.game.getRound().getQuestion() != null) {
+            else if (GameServer.this.game.getRound() != null
+                && GameServer.this.game.getRound().getQuestion() != null) {
               jsonOut.put("action", "vote");
               jsonOut.put("time", time);
               jsonOut.put("question", g.getRound().getQuestion().getQuestion());

@@ -17,7 +17,7 @@
  */
 
 var player_id   = -1;
-var plater_name = '';
+var player_name = '';
 var timer       = 0;
 var state       = 'waiting';
 
@@ -39,24 +39,42 @@ function onLoad() {
   document.getElementById("question-box").style.display = 'none';
   document.getElementById("vote-box").style.display     = 'none';
   document.getElementById("name-error").style.display   = 'none';
-  getInfo();
+  
+  document.getElementById("name-field").addEventListener("keyup",
+      function(event) {
+    event.preventDefault();
+    if (event.keyCode == 13) {
+      createPlayer();
+    }
+  });
+  
+  document.getElementById("answer-field").addEventListener("keyup",
+      function(event) {
+    event.preventDefault();
+    if (event.keyCode == 13) {
+      submitAnswer();
+    }
+  });
 }
 
 function createPlayer() {
   var name = document.getElementById('name-field').value;
   
-  var json = sendData({'action':'create user', 'name':name});
+  sendData({'action':'create user', 'name':name}, function(json) {
+    if(json['created'] == 'true') {
+      player_id   = json['id'];
+      player_name = json['name'];
+      document.getElementById('name').innerHTML        = player_name; 
+      document.getElementById("welcome").style.display = 'none';
+      document.getElementById("header").style.backgroundColor=json['color'];
+      getInfo();
+    }
+    else {
+      document.getElementById("welcome").style.display    = 'block';
+      document.getElementById("name-error").style.display = 'block';
+    }
   
-  if(json['created'] == 'true') {
-    player_id   = json['id'];
-    player_name = json['name'];
-    document.getElementById('name').innerHTML        = player_name; 
-    document.getElementById("welcome").style.display = 'none';
-  }
-  else {
-    document.getElementById("welcome").style.display    = 'block';
-    document.getElementById("name-error").style.display = 'block';
-  }
+  });
 }
 
 function submitAnswer() {
@@ -69,25 +87,73 @@ function submitAnswer() {
     return null;
   }
   var data = {'action':'send answer', 'id':aid, 'answer':answer}
-  sendData(data);
+  sendData(data, function(x) {});
   document.getElementById("question-box").style.display = 'none';
   document.getElementById("timer").style.display        = 'none';
 }
 
 function submitVote(aid) {
-  var json = sendData({'action':'vote', 'id':player_id.toString(),
-                       'aid':aid.toString()});
-  if(json['left'] == 0 || json['left'] == '0') {
-    removeElementsByClass('vote-option');
-  }
-  else {
-    //TODO somehow incorporate json['voted'] into this
-    
-  }
+  sendData({'action':'vote', 'id':player_id.toString(), 
+            'aid':aid.toString()}, function(json) {
+    if(json['left'] == 0 || json['left'] == '0') {
+      removeElementsByClass('vote-option');
+    }
+    else {
+      //TODO somehow incorporate json['voted'] into this
+      
+    }
+  });
 }
 
+function getInfo() {
+  sendData({'action':'get state', 'state':state, 'id':player_id.toString()},
+      function(json) {
+    timer = json['time'];
+    
+  
+    if(timer <= 0) {
+      document.getElementById("timer").style.display = 'none';
+    }
+    
+    document.getElementById("timer").innerHTML = timer;
+    
+    if(state == 'answering' || state =='voting') {
+      if(timer <= 0) {
+        state = 'waiting';
+        document.getElementById("answer-field").value         = '';
+        document.getElementById("question-box").style.display = 'none';
+        document.getElementById("vote-box").style.display     = 'none';
+      }
+    }
+    
+    else {
+      if(json['action'] == 'answer') {
+        document.getElementById("answer-question").innerHTML = json['question'];
+        document.getElementById('answer-field').dataset.id = json['aid'];
+        state = 'answering';
+      }
+      else if(json['action'] == 'vote') {
+        document.getElementById("vote-question").innerHTML = json['question'];
+        document.getElementById("votes-left").innerHTML = json['votes'];
+        var element = document.getElementById("answers");
+        json['answers'].forEach(function(answer) {
+          var div = document.createElement("div");
+          var node = document.createTextNode(answer['answer']);
+          div.dataset.id = 5;
+          div.className = 'vote-option';
+          div.setAttribute("onclick", "submitVote(" + answer['aid'] + ")");
+          div.appendChild(node);
+          element.appendChild(div);
+        });
+        state = 'voting';
+      }
+    }
+    
+    //window.setTimeout(getInfo, 1000);
+  });
+}
 
-function sendData(data) {
+function sendData(data, callback) {
   var xmlhttp;
   if (window.XMLHttpRequest) {
       xmlhttp = new XMLHttpRequest(); //for IE7+, Firefox, Chrome, Opera, Safari
@@ -100,61 +166,14 @@ function sendData(data) {
   xmlhttp.open("POST", 'data.json?q='+Math.random(), true);
   xmlhttp.setRequestHeader("Content-type", "application/json");
   xmlhttp.send(JSON.stringify(data));
-   
+  
   xmlhttp.onreadystatechange = function() {
     if (xmlhttp.readyState == 4) {
       if (xmlhttp.status >= 200 && xmlhttp.status <= 299) {
-        return JSON.parse(xmlhttp.responseText);
+        callback(JSON.parse(xmlhttp.responseText));
       } 
     }
   };
-  return {};
-}
-
-function getInfo() {
-  var json = sendData({'action':'get state', 'state':state});
-  timer = json['time'];
-  
-
-  if(timer <= 0) {
-    document.getElementById("timer").style.display = 'none';
-  }
-  
-  document.getElementById("timer").innerHTML = timer;
-  
-  if(state == 'answering' || state =='voting') {
-    if(timer <= 0) {
-      state = 'waiting';
-      document.getElementById("answer-field").value         = '';
-      document.getElementById("question-box").style.display = 'none';
-      document.getElementById("vote-box").style.display     = 'none';
-    }
-  }
-  
-  else {
-    if(json['action'] == 'answer') {
-      document.getElementById("answer-question").innerHTML = json['question'];
-      document.getElementById('answer-field').dataset.id = json['aid'];
-      state = 'answering';
-    }
-    else if(json['action'] == 'vote') {
-      document.getElementById("vote-question").innerHTML = json['question'];
-      document.getElementById("votes-left").innerHTML = json['votes'];
-      var element = document.getElementById("answers");
-      json['answers'].forEach(function(answer) {
-        var div = document.createElement("div");
-        var node = document.createTextNode(answer['answer']);
-        div.dataset.id = 5;
-        div.className = 'vote-option';
-        div.setAttribute("onclick", "submitVote(" + answer['aid'] + ")");
-        div.appendChild(node);
-        element.appendChild(div);
-      });
-      state = 'voting';
-    }
-  }
-  
-  window.setTimeout(getInfo, 1000);
 }
 
 function removeElementsByClass(className){

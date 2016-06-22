@@ -20,8 +20,8 @@ package qinq.application;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import qinq.resource.Game;
@@ -32,7 +32,7 @@ public class Main extends Application {
     try {
       GameServer server = new GameServer();
       Game game = new Game();
-      Pane root = new GamePane(server, game);
+      Parent root = new GameUI(server, game);
       server.setGame(game);
 
       primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {

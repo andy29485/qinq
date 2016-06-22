@@ -1,37 +1,28 @@
-/*
- * Copyright (c) 2016, Andriy Zasypkin.
- *
- * This file is part of Qinq.
- *
- * Qinq(or QINQ) is free software: you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or (at your option) any
- * later version.
- *
- * Qinq in distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * Qinq. If not, see <http://www.gnu.org/licenses/>.
- */
-
 package qinq.application;
 
+import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import qinq.resource.Game;
+import qinq.resource.Player;
 
-public class GamePane extends BorderPane {
-  private GameServer server;
-  private Label      addressLabel;
+public class SetupPane extends BorderPane {
+  private Label    addressLabel;
+  private FlowPane players;
+  private Game     game;
 
-  public GamePane(GameServer server, Game game) {
-    this.server = server;
+  public SetupPane(GameUI root, GameServer server, Game game) {
     this.addressLabel = new Label(server.getAddress());
+    this.players = new FlowPane();
+    this.game = game;
+
+    this.players.setPadding(new Insets(10, 10, 10, 10));
+
     HBox top = new HBox(5);
     HBox bottom = new HBox(20);
     Button buttonStart = new Button("Start");
@@ -46,15 +37,15 @@ public class GamePane extends BorderPane {
     top.setAlignment(Pos.CENTER);
 
     buttonStart.setOnAction(e -> {
-      // TODO start game
+      root.startGame();
     });
 
     buttonOpt.setOnAction(e -> {
-      // TODO open options
+      root.goToOptions();
     });
 
     buttonExit.setOnAction(e -> {
-      this.server.stop();
+      server.stop();
       System.exit(0);
     });
     bottom.getChildren().add(buttonStart);
@@ -63,6 +54,19 @@ public class GamePane extends BorderPane {
     bottom.setAlignment(Pos.CENTER);
 
     this.setTop(top);
+    this.setCenter(this.players);
     this.setBottom(bottom);
+  }
+
+  public void refreshPlayers() {
+    for (Player player : this.game.getPlayers()) {
+      if (!this.players.getChildren().contains(player.getLabel()))
+        Platform.runLater(new Runnable() {
+          @Override
+          public void run() {
+            SetupPane.this.players.getChildren().add(player.getLabel());
+          }
+        });
+    }
   }
 }

@@ -19,7 +19,10 @@
 package qinq.resource;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import javafx.scene.control.Label;
 
 /**
  * Game
@@ -32,25 +35,48 @@ public class Player extends GameObject {
   /**
    * The nick name the player will go by during the game
    */
-  private String       strName;
+  private String                   strName;
   /**
    * The IP used to connect, primarily used to reconnect
    */
-  private String       strIp;
+  private String                   strIp;
   /**
    * List of Answers for the current Game/Round
    *
    * TODO decide whether game or round
    */
-  private List<Answer> answers;
+  private List<Answer>             answers;
   /**
    * Number of votes a player has.
    */
-  private int          nVotes;
+  private int                      nVotes;
+  /**
+   * Colour of the player.
+   */
+  private String                   color;
+  /**
+   * Label that represents the player.
+   */
+  private Label                    label;
   /**
    * Total number of players, use for generating player IDs.
    */
-  private static int   nPlayers = 0;
+  private static int               nPlayers = 0;
+  /**
+   * Colours that can be used to assign a player.
+   */
+  @SuppressWarnings("serial")
+  public static final List<String> COLOURS  =
+      Collections.unmodifiableList(new ArrayList<String>() {
+                                                  {
+                                                    add("#ff0000");
+                                                    add("#00ff00");
+                                                    add("#0000ff");
+                                                    add("#ff00ff");
+                                                    add("#00ffff");
+                                                    add("#ffff00");
+                                                  }
+                                                });
 
   /**
    * create a new player from a name and an IP
@@ -66,6 +92,11 @@ public class Player extends GameObject {
     this.strName = strName;
     this.strIp = ip;
     this.setVotes(0);
+    this.label = new Label(this.getName());
+    this.color = Player.COLOURS.get(this.getID() % Player.COLOURS.size());
+    this.label
+        .setStyle(String.format("-fx-background-color: %s;", this.getColor()));
+    this.label.getStyleClass().add("player-label");
   }
 
   /**
@@ -142,4 +173,21 @@ public class Player extends GameObject {
     this.strIp = strIp;
   }
 
+  /**
+   * Get the player's colour
+   *
+   * @return the colour
+   */
+  public String getColor() {
+    return this.color;
+  }
+
+  /**
+   * Get the player's label
+   *
+   * @return the label of the player
+   */
+  public Label getLabel() {
+    return this.label;
+  }
 }

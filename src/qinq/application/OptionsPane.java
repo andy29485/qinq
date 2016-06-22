@@ -24,13 +24,13 @@ import qinq.resource.Game;
 import qinq.resource.Question;
 
 public class OptionsPane extends BorderPane {
-  public OptionsPane(Game game) {
+  public OptionsPane(GameUI root, Game game) {
     Label header = new Label("Game Options");
     header.setId("header");
     header.resize(this.getWidth(), 100);// TODO should be in css
 
-    // TODO
-    Question.setNumAnswers(2);// TODO
+    // TODO create an option for this
+    Question.setNumAnswers(2);
 
     this.setTop(header);
     this.setCenter(new Label("TODO"));

@@ -21,6 +21,8 @@ package qinq.resource;
 import java.util.ArrayList;
 import java.util.List;
 
+import qinq.application.GameUI;
+
 /**
  * Game
  *
@@ -37,6 +39,10 @@ public class Game extends GameObject {
    * The current round that is being played.
    */
   private Round        currentRound;
+  /**
+   * The Game UI, needed for refreshing people, and other such tasks(probably).
+   */
+  private GameUI       gameui;
 
   /**
    * @param questions
@@ -56,6 +62,8 @@ public class Game extends GameObject {
    * @return whether the player has be created successfully
    */
   public int addPlayer(String strName, String ip) {
+    if (this.currentRound != null)
+      return -2;
     for (Player player : this.players) {
       if (player.getName().equalsIgnoreCase(strName)) {
         if (player.getIp().equalsIgnoreCase(ip))
@@ -66,6 +74,8 @@ public class Game extends GameObject {
     }
     Player p = new Player(strName, ip);
     this.players.add(p);
+    if (this.gameui != null)
+      this.gameui.refreshPlayers();
     return p.getID();
   }
 
@@ -74,6 +84,16 @@ public class Game extends GameObject {
    */
   public void start(List<String> questions) {
     this.currentRound = new Round(0, "Round 1", this.players, questions);
+    this.currentRound.answer();
+    this.currentRound.vote();
+
+    this.currentRound = new Round(0, "Round 2", this.players, questions);
+    this.currentRound.answer();
+    this.currentRound.vote();
+
+    this.currentRound = new Round(1, "Final Round", this.players, questions);
+    this.currentRound.answer();
+    this.currentRound.vote();
     // TODO
   }
 
@@ -161,5 +181,15 @@ public class Game extends GameObject {
         return q;
     }
     return null;
+  }
+
+  /**
+   * Set the Game UI
+   *
+   * @param gameui
+   *          the game ui to set
+   */
+  public void setGameUI(GameUI gameui) {
+    this.gameui = gameui;
   }
 }

@@ -56,7 +56,7 @@ public class Game extends GameObject {
    * @return whether the player has be created successfully
    */
   public int addPlayer(String strName) {
-    for (Player player : players) {
+    for (Player player : this.players) {
       if (player.getName().equalsIgnoreCase(strName))
         return -1;
     }
@@ -90,6 +90,8 @@ public class Game extends GameObject {
    * @return the player object, or null if player was not found.
    */
   public Player getPlayerByName(String name) {
+    if (this.players == null)
+      return null;
     for (Player p : this.players) {
       if (p.getName().equalsIgnoreCase(name))
         return p;
@@ -105,6 +107,8 @@ public class Game extends GameObject {
    * @return the player object, or null if player was not found.
    */
   public Player getPlayerById(int id) {
+    if (this.players == null)
+      return null;
     for (Player p : this.players) {
       if (p.getID() == id)
         return p;
@@ -129,6 +133,8 @@ public class Game extends GameObject {
    * @return the answer object, or null if answer was not found.
    */
   public Answer getAnswerById(int id) {
+    if (this.currentRound == null)
+      return null;
     for (Answer a : this.currentRound.getAnswers()) {
       if (a.getID() == id)
         return a;
@@ -144,6 +150,8 @@ public class Game extends GameObject {
    * @return the question object, or null if question was not found.
    */
   public Question getQuestionById(int id) {
+    if (this.currentRound == null)
+      return null;
     for (Question q : this.currentRound.getQuestions()) {
       if (q.getID() == id)
         return q;

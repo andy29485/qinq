@@ -64,7 +64,7 @@ public class Game extends GameObject {
           return -1;
       }
     }
-    Player p = new Player(strName);
+    Player p = new Player(strName, ip);
     this.players.add(p);
     return p.getID();
   }

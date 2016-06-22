@@ -32,6 +32,7 @@ function onLoad() {
   document.getElementById("question-box").style.display = 'none';
   document.getElementById("vote-box").style.display = 'none';
   document.getElementById("name-error").style.display = 'none';
+  getInfo();
 }
 
 function createPlayer() {
@@ -117,6 +118,13 @@ function getQuestion(question, question_id) {
 
 function getVoteChoices() {
   //TODO
+}
+
+
+function getInfo() {
+  //TODO
+  
+  window.setTimeout(getInfo(), 1000);
 }
 
 function escapeXml(unsafe) {

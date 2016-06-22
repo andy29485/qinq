@@ -34,7 +34,7 @@ public class Player extends GameObject {
    */
   private String       strName;
   /**
-   * The ip used to connect, primarily used to reconnect
+   * The IP used to connect, primarily used to reconnect
    */
   private String       strIp;
   /**
@@ -52,10 +52,19 @@ public class Player extends GameObject {
    */
   private static int   nPlayers = 0;
 
-  public Player(String strName) {
+  /**
+   * create a new player from a name and an IP
+   *
+   * @param strName
+   *          nick name of the player
+   * @param ip
+   *          player's ip address
+   */
+  public Player(String strName, String ip) {
     super(Player.nPlayers++);
     this.answers = new ArrayList<Answer>();
     this.strName = strName;
+    this.strIp = ip;
     this.setVotes(0);
   }
 
@@ -116,7 +125,7 @@ public class Player extends GameObject {
 
   /**
    * Get the player IP address
-   * 
+   *
    * @return the IP to set
    */
   public String getIp() {
@@ -125,7 +134,7 @@ public class Player extends GameObject {
 
   /**
    * Set the player IP address
-   * 
+   *
    * @param strIp
    *          the IP to set
    */

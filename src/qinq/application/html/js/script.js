@@ -20,23 +20,22 @@ var player_id = -1;
 var timer     = 0;
 var aid       = 0;
 
-function createPlayer() {
-  var name = document.getElementById('name-field').value;
-  //TODO send name to server, get id
-  if(true /*send_success?*/) {
-    document.getElementById("question-box").style.display = 'none';
-    player_id = -1;//TODO
-  }
-  else {
-    //Try again?
-  }
+function onLoad() {
+  //visible:
+  //document.getElementById("id-name").style.display = 'block';
+  
+  //not:
+  //document.getElementById("id-name").style.display = 'none';
+  
+  
+  document.getElementById("welcome").style.display = 'block';
+  document.getElementById("question-box").style.display = 'none';
+  document.getElementById("vote-box").style.display = 'none';
+  document.getElementById("name-error").style.display = 'none';
 }
 
-function submitAnswer() {
-  var answer = document.getElementById('answer-field').value;
-  document.getElementById("question-box").style.display = 'none';
-  //TODO send answer and player id to server
-  //document.getElementById(element_id).style.display = 'block'; //show element
+function createPlayer() {
+  var name = document.getElementById('name-field').value;
   var xmlhttp;
   if (window.XMLHttpRequest) {
       xmlhttp = new XMLHttpRequest(); //for IE7+, Firefox, Chrome, Opera, Safari
@@ -47,23 +46,59 @@ function submitAnswer() {
   
   //aid = document.getElementById('answer-field').aid
   
-  var data = {'action':'send answer', 'id':aid.toString(), 'answer':answer}
+  var data = {'action':'create user', 'name':name}
   
   //Create a asynchronous GET request
   xmlhttp.open("POST", 'data.json?q'+Math.random(), true);
-  //xmlhttp.setRequestHeader("ajax", JSON.stringify(data));
   xmlhttp.setRequestHeader("Content-type", "application/json");
   xmlhttp.send(JSON.stringify(data));
    
-  //When readyState is 4 then get the server output
   xmlhttp.onreadystatechange = function() {
     if (xmlhttp.readyState == 4) { 
       if (xmlhttp.status >= 200 && xmlhttp.status <= 299) {
-        //DONE
+        var json = JSON.parse(xmlhttp.responseText);
+        document.getElementById("question-box").style.display = 'none';
+        if(json['created'] == 'true') {
+          player_id = json['id'];
+          document.getElementById("welcome").style.display = 'none';
+        }
+        else {
+          document.getElementById("welcome").style.display = 'block';
+          document.getElementById("name-error").style.display = 'block';
+        }
       } 
-      else {
-        alert('Something is wrong !!');
-      }
+    }
+  };
+}
+
+function submitAnswer() {
+  document.getElementById("question-box").style.display = 'none';
+  document.getElementById("welcome").style.display      = 'none';
+  document.getElementById("vote-box").style.display     = 'none';
+  var xmlhttp;
+  if (window.XMLHttpRequest) {
+      xmlhttp = new XMLHttpRequest(); //for IE7+, Firefox, Chrome, Opera, Safari
+  }
+  else {
+      xmlhttp = new ActiveXObject("Microsoft.XMLHTTP"); //for IE6, IE5
+  }
+  
+  //TODO get answer from field
+  var answer = document.getElementById('answer-field').value;
+  //aid = document.getElementById('answer-field').aid
+  
+  var data = {'action':'send answer', 'id':aid.toString(), 'answer':answer}
+  
+  //Create a asynchronous GET request
+  xmlhttp.open("POST", 'data.json?q='+Math.random(), true);
+  xmlhttp.setRequestHeader("Content-type", "application/json");
+  xmlhttp.send(JSON.stringify(data));
+   
+  xmlhttp.onreadystatechange = function() {
+    if (xmlhttp.readyState == 4) {
+      if (xmlhttp.status >= 200 && xmlhttp.status <= 299) {
+        var json = JSON.parse(xmlhttp.responseText);
+      } 
     }
   };
 }
@@ -73,7 +108,6 @@ function submitVote() {
 }
 
 function getQuestion(question, question_id) {
-  x.op
   //TODO set question
   //TODO make visible
   //TODO add timer

@@ -134,6 +134,7 @@ public class GameServer {
             jsonOut.put("created", "true");
           else
             jsonOut.put("created", "false");
+          jsonOut.put("id", id);
           break;
         case "send answer":
           id = Integer.valueOf(json.getString("id"));

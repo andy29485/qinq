@@ -3,3 +3,6 @@ body {
 	background: black;
 	color: white;
 }
+#name-error {
+	color: red;
+}

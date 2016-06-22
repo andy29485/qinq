@@ -6,7 +6,7 @@
 		<link rel="shortcut icon" href="/images/qinq.ico" />
 		<title>QINQ</title>
 	</head>
-	<body>
+	<body onload="onLoad()">
     <script src="js/script.js"></script>
 		<header id="header">QINQ</header>
 		<div id="welcome">
@@ -14,11 +14,11 @@
       <form>
         <input type="text" name="player-name" id="name-field">
       </form>
-      <span id="name-error" style='{display:"block"}'>Name in use</span>
+      <span id="name-error">Name in use</span>
       <button onclick="createPlayer()">Create Player</button>
       <button onclick="createPlayer()">Spectate</button>
 		</div>
-    <div id="question-box" style='{display:"block"}'>
+    <div id="question-box">
       <div class="timer">TODO</div>
       <div id="question">TODO</div>
       <form>
@@ -26,7 +26,7 @@
       </form>
       <button onclick="submitAnswer()">Submit</button>
     </div>
-    <div id="vote-box" style='{display:"block"}'>
+    <div id="vote-box">
       <div class="timer">TODO</div>
       <section id="answers">
         <ul>

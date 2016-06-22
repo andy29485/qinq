@@ -16,9 +16,10 @@
  * Qinq. If not, see <http://www.gnu.org/licenses/>.
  */
 
-var player_id = -1;
-var timer     = 0;
-var aid       = 0;
+var player_id   = -1;
+var plater_name = '';
+var timer       = 0;
+var state       = 'waiting';
 
 function onLoad() {
   //visible:
@@ -27,55 +28,66 @@ function onLoad() {
   //not:
   //document.getElementById("id-name").style.display = 'none';
   
+  if (!String.prototype.trim) {
+    String.prototype.trim = function () {
+      return this.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
+    };
+  }
   
-  document.getElementById("welcome").style.display = 'block';
+  document.getElementById("welcome").style.display      = 'block';
+  document.getElementById("timer").style.display        = 'none';
   document.getElementById("question-box").style.display = 'none';
-  document.getElementById("vote-box").style.display = 'none';
-  document.getElementById("name-error").style.display = 'none';
+  document.getElementById("vote-box").style.display     = 'none';
+  document.getElementById("name-error").style.display   = 'none';
   getInfo();
 }
 
 function createPlayer() {
   var name = document.getElementById('name-field').value;
-  var xmlhttp;
-  if (window.XMLHttpRequest) {
-      xmlhttp = new XMLHttpRequest(); //for IE7+, Firefox, Chrome, Opera, Safari
+  
+  var json = sendData({'action':'create user', 'name':name});
+  
+  if(json['created'] == 'true') {
+    player_id   = json['id'];
+    player_name = json['name'];
+    document.getElementById('name').innerHTML        = player_name; 
+    document.getElementById("welcome").style.display = 'none';
   }
   else {
-      xmlhttp = new ActiveXObject("Microsoft.XMLHTTP"); //for IE6, IE5
+    document.getElementById("welcome").style.display    = 'block';
+    document.getElementById("name-error").style.display = 'block';
   }
-  
-  //aid = document.getElementById('answer-field').aid
-  
-  var data = {'action':'create user', 'name':name}
-  
-  //Create a asynchronous GET request
-  xmlhttp.open("POST", 'data.json?q'+Math.random(), true);
-  xmlhttp.setRequestHeader("Content-type", "application/json");
-  xmlhttp.send(JSON.stringify(data));
-   
-  xmlhttp.onreadystatechange = function() {
-    if (xmlhttp.readyState == 4) { 
-      if (xmlhttp.status >= 200 && xmlhttp.status <= 299) {
-        var json = JSON.parse(xmlhttp.responseText);
-        document.getElementById("question-box").style.display = 'none';
-        if(json['created'] == 'true') {
-          player_id = json['id'];
-          document.getElementById("welcome").style.display = 'none';
-        }
-        else {
-          document.getElementById("welcome").style.display = 'block';
-          document.getElementById("name-error").style.display = 'block';
-        }
-      } 
-    }
-  };
 }
 
 function submitAnswer() {
-  document.getElementById("question-box").style.display = 'none';
   document.getElementById("welcome").style.display      = 'none';
   document.getElementById("vote-box").style.display     = 'none';
+  
+  var answer = document.getElementById('answer-field').value;
+  var aid = document.getElementById('answer-field').dataset.id; 
+  if(aid == undefined || !answer.trim()) {
+    return null;
+  }
+  var data = {'action':'send answer', 'id':aid, 'answer':answer}
+  sendData(data);
+  document.getElementById("question-box").style.display = 'none';
+  document.getElementById("timer").style.display        = 'none';
+}
+
+function submitVote(aid) {
+  var json = sendData({'action':'vote', 'id':player_id.toString(),
+                       'aid':aid.toString()});
+  if(json['left'] == 0 || json['left'] == '0') {
+    removeElementsByClass('vote-option');
+  }
+  else {
+    //TODO somehow incorporate json['voted'] into this
+    
+  }
+}
+
+
+function sendData(data) {
   var xmlhttp;
   if (window.XMLHttpRequest) {
       xmlhttp = new XMLHttpRequest(); //for IE7+, Firefox, Chrome, Opera, Safari
@@ -83,12 +95,6 @@ function submitAnswer() {
   else {
       xmlhttp = new ActiveXObject("Microsoft.XMLHTTP"); //for IE6, IE5
   }
-  
-  //TODO get answer from field
-  var answer = document.getElementById('answer-field').value;
-  //aid = document.getElementById('answer-field').aid
-  
-  var data = {'action':'send answer', 'id':aid.toString(), 'answer':answer}
   
   //Create a asynchronous GET request
   xmlhttp.open("POST", 'data.json?q='+Math.random(), true);
@@ -98,33 +104,64 @@ function submitAnswer() {
   xmlhttp.onreadystatechange = function() {
     if (xmlhttp.readyState == 4) {
       if (xmlhttp.status >= 200 && xmlhttp.status <= 299) {
-        var json = JSON.parse(xmlhttp.responseText);
+        return JSON.parse(xmlhttp.responseText);
       } 
     }
   };
+  return {};
 }
-
-function submitVote() {
-  //TODO
-}
-
-function getQuestion(question, question_id) {
-  //TODO set question
-  //TODO make visible
-  //TODO add timer
-  //TODO
-  
-}
-
-function getVoteChoices() {
-  //TODO
-}
-
 
 function getInfo() {
-  //TODO
+  var json = sendData({'action':'get state', 'state':state});
+  timer = json['time'];
   
-  window.setTimeout(getInfo(), 1000);
+
+  if(timer <= 0) {
+    document.getElementById("timer").style.display = 'none';
+  }
+  
+  document.getElementById("timer").innerHTML = timer;
+  
+  if(state == 'answering' || state =='voting') {
+    if(timer <= 0) {
+      state = 'waiting';
+      document.getElementById("answer-field").value         = '';
+      document.getElementById("question-box").style.display = 'none';
+      document.getElementById("vote-box").style.display     = 'none';
+    }
+  }
+  
+  else {
+    if(json['action'] == 'answer') {
+      document.getElementById("answer-question").innerHTML = json['question'];
+      document.getElementById('answer-field').dataset.id = json['aid'];
+      state = 'answering';
+    }
+    else if(json['action'] == 'vote') {
+      document.getElementById("vote-question").innerHTML = json['question'];
+      document.getElementById("votes-left").innerHTML = json['votes'];
+      var element = document.getElementById("answers");
+      json['answers'].forEach(function(answer) {
+        var div = document.createElement("div");
+        var node = document.createTextNode(answer['answer']);
+        div.dataset.id = 5;
+        div.className = 'vote-option';
+        div.setAttribute("onclick", "submitVote(" + answer['aid'] + ")");
+        div.appendChild(node);
+        element.appendChild(div);
+      });
+      state = 'voting';
+    }
+  }
+  
+  window.setTimeout(getInfo, 1000);
+}
+
+function removeElementsByClass(className){
+  var elements = document.getElementsByClassName(className);
+  while(elements.length > 0){
+    elements[0].parentNode.removeChild(elements[0]);
+  }
 }
 
 function escapeXml(unsafe) {

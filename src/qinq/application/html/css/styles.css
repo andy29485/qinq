@@ -1,11 +1,17 @@
 @CHARSET "UTF-8";
+h1 {
+	float: left;
+}
+
 header {
-	alignmetn: center;
+  height: 100px;
+  vertical-align: middle;
+  text-align: center;
 }
 body {
-	background: black;
-	color: white;
+	background: #000;
+	color: #FFF;
 }
 #name-error {
-	color: red;
+	color: #F00;
 }

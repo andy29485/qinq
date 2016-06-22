@@ -8,7 +8,11 @@
 	</head>
 	<body onload="onLoad()">
     <script src="js/script.js"></script>
-		<header id="header">QINQ</header>
+		<header id="header">
+      <h1>QINQ</h1>
+      <div id="name"></div>
+		</header>
+    <div id="timer">TODO</div>
 		<div id="welcome">
 		  TODO
       <form>
@@ -19,19 +23,17 @@
       <button onclick="createPlayer()">Spectate</button>
 		</div>
     <div id="question-box">
-      <div class="timer">TODO</div>
-      <div id="question">TODO</div>
+      <div id="answer-question">TODO</div>
       <form>
         <input type="text" name="answer" id="answer-field">
       </form>
       <button onclick="submitAnswer()">Submit</button>
     </div>
     <div id="vote-box">
-      <div class="timer">TODO</div>
+      <div id="vote-question">TODO</div>
+      <div id="votes-left">TODO</div>
       <section id="answers">
-        <ul>
-          
-        </ul>
+        <!-- place holder -->
       </section>
     </div>
 	</body>

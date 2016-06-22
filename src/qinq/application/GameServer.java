@@ -168,12 +168,11 @@ public class GameServer {
               jsonOut.put("action", "vote");
               jsonOut.put("time", time);
               jsonOut.put("question", g.getRound().getQuestion().getQuestion());
+              jsonOut.put("votes", p.getVotes());
               JSONArray jSONArray = new JSONArray();
-              for (Answer tmp_a : g.getRound().getQuestion().getAnswers()) {
-                jSONArray
-                    .put(new JSONObject().put("answer", tmp_a.getAnswer()));
-                jSONArray
-                    .put(new JSONObject().put("answer", tmp_a.getAnswer()));
+              for (Answer tmp : g.getRound().getQuestion().getAnswers()) {
+                jSONArray.put(new JSONObject().put("answer", tmp.getAnswer()));
+                jSONArray.put(new JSONObject().put("aid", tmp.getID()));
               }
               jsonOut.put("answers", jSONArray);
             }

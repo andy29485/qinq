@@ -101,18 +101,15 @@ public class GameServer {
     public void handle(String target, Request baseRequest,
         HttpServletRequest request, HttpServletResponse response)
         throws IOException, ServletException {
-
-      if (GameServer.this.game == null
-          || !target.equalsIgnoreCase("/data.json"))
+      Game g = GameServer.this.game;
+      if (g == null || !target.equalsIgnoreCase("/data.json"))
         return;
 
-      // TODO StringBuilder does not contain json sent by javascript
       StringBuilder sb = new StringBuilder();
       String line;
       while ((line = request.getReader().readLine()) != null) {
         sb.append(line);
       }
-      System.out.println("JSON: " + sb.toString());
 
       JSONObject json;
       try {
@@ -132,7 +129,7 @@ public class GameServer {
 
       switch (json.getString("action").toLowerCase()) {
         case "create user":
-          id = GameServer.this.game.addPlayer(json.getString("name"));
+          id = g.addPlayer(json.getString("name"));
           if (id != -1)
             jsonOut.put("created", "true");
           else
@@ -140,22 +137,22 @@ public class GameServer {
           break;
         case "send answer":
           id = Integer.valueOf(json.getString("id"));
-          a = GameServer.this.game.getAnswerById(id);
+          a = g.getAnswerById(id);
           a.setAnswer(json.getString("answer"));
           a.getPlayer().getAnswers().remove(a);
           break;
         case "vote":
           id = Integer.valueOf(json.getString("id"));
           aid = Integer.valueOf(json.getString("aid"));
-          p = GameServer.this.game.getPlayerById(id);
-          a = GameServer.this.game.getAnswerById(aid);
+          p = g.getPlayerById(id);
+          a = g.getAnswerById(aid);
           jsonOut.put("voted", a.vote(p));
           jsonOut.put("left", p.getVotes());
           break;
         case "get state":
           id = Integer.valueOf(json.getString("id"));
-          p = GameServer.this.game.getPlayerById(id);
-          time = GameServer.this.game.getRound().getTime();
+          p = g.getPlayerById(id);
+          time = g.getRound().getTime();
           if (json.getString("state").equalsIgnoreCase("waiting")) {
             if (p.getAnswers().size() > 0) {
               a = p.getAnswers().get(0);
@@ -167,11 +164,9 @@ public class GameServer {
             else if (GameServer.this.game.getRound().getQuestion() != null) {
               jsonOut.put("action", "vote");
               jsonOut.put("time", time);
-              jsonOut.put("question",
-                  GameServer.this.game.getRound().getQuestion().getQuestion());
+              jsonOut.put("question", g.getRound().getQuestion().getQuestion());
               JSONArray jSONArray = new JSONArray();
-              for (Answer tmp_a : GameServer.this.game.getRound().getQuestion()
-                  .getAnswers()) {
+              for (Answer tmp_a : g.getRound().getQuestion().getAnswers()) {
                 jSONArray
                     .put(new JSONObject().put("answer", tmp_a.getAnswer()));
                 jSONArray

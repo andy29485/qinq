@@ -23,7 +23,7 @@ var aid       = 0;
 function createPlayer() {
   var name = document.getElementById('name-field').value;
   //TODO send name to server, get id
-  if(send_success) {
+  if(true /*send_success?*/) {
     document.getElementById("question-box").style.display = 'none';
     player_id = -1;//TODO
   }
@@ -47,11 +47,11 @@ function submitAnswer() {
   
   //aid = document.getElementById('answer-field').aid
   
-  var data = {'action':'send answer', 'id':aid, 'answer':answer}
+  var data = {'action':'send answer', 'id':aid.toString(), 'answer':answer}
   
   //Create a asynchronous GET request
-  xmlhttp.open("GET", 'data.json', true);
-  xmlhttp.setRequestHeader("ajax", "true");
+  xmlhttp.open("POST", 'data.json?q'+Math.random(), true);
+  //xmlhttp.setRequestHeader("ajax", JSON.stringify(data));
   xmlhttp.setRequestHeader("Content-type", "application/json");
   xmlhttp.send(JSON.stringify(data));
    

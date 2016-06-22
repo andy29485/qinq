@@ -39,8 +39,21 @@ public class Question extends GameObject {
    * Number of answers each question should have
    */
   private static int   nAnswers;
+  /**
+   * Number of answers each question should have
+   */
+  private static int   dAnswerTime = 40;
+  /**
+   * Number of answers each question should have
+   */
+  private static int   dVoteTime   = 15;
+  /**
+   * Total number of questions, use for generating question IDs.
+   */
+  private static int   nQuestions  = 0;
 
   public Question(String strValue, Player... players) {
+    super(Question.nQuestions++);
     this.strValue = strValue;
     for (Player player : players) {
       this.lAnswers.add(new Answer(player, this));
@@ -83,6 +96,53 @@ public class Question extends GameObject {
    */
   public static void setNumAnswers(int nAnswers) {
     Question.nAnswers = nAnswers;
+  }
+
+  /**
+   * Get the answers assocciated with this question
+   *
+   * @return the answers assocciated with this question
+   */
+  public List<Answer> getAnswers() {
+    return this.lAnswers;
+  }
+
+  /**
+   * Get the amount of time one has to answer a single question
+   *
+   * @return the amount of time one has to answer a single question
+   */
+  public static int getAnswerTime() {
+    return Question.dAnswerTime;
+  }
+
+  /**
+   * Set the amount of time one has to answer a single question
+   *
+   * @param dAnswerTime
+   *          the amount of time one has to answer a single question
+   */
+  public static void setAnswerTime(int dAnswerTime) {
+    Question.dAnswerTime = dAnswerTime;
+  }
+
+  /**
+   * Get the amount of time one has to cast a single vote
+   *
+   * @return the amount of time one has to cast a single vote
+   */
+  public static int getVoteTime() {
+    return Question.dVoteTime;
+  }
+
+  /**
+   * Set the amount of time one has to cast a single vote
+   *
+   * @param dVoteTime
+   *          the amount of time one has to cast a single vote
+   */
+  public static void setVoteTime(int dVoteTime) {
+    Question.dVoteTime = dVoteTime;
   }
 
 }

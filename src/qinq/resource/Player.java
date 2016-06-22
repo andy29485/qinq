@@ -18,7 +18,6 @@
 
 package qinq.resource;
 
-import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,22 +32,27 @@ public class Player extends GameObject {
   /**
    * The nick name the player will go by during the game
    */
-  private String            strName;
+  private String       strName;
   /**
    * List of Answers for the current Game/Round
    *
    * TODO decide whether game or round
    */
-  private List<Answer>      answers;
+  private List<Answer> answers;
   /**
-   * Socket used to connect to the player
+   * Number of votes a player has.
    */
-  private InetSocketAddress socket;
+  private int          nVotes;
+  /**
+   * Total number of players, use for generating player IDs.
+   */
+  private static int   nPlayers = 0;
 
-  public Player(String strName, InetSocketAddress socket) {
+  public Player(String strName) {
+    super(Player.nPlayers++);
     this.answers = new ArrayList<Answer>();
     this.strName = strName;
-    this.socket = socket;
+    this.setVotes(0);
   }
 
   /**
@@ -71,10 +75,39 @@ public class Player extends GameObject {
   }
 
   /**
+   * Get the answers a player still has to answer
+   * 
    * @return the answers
    */
   public List<Answer> getAnswers() {
     return this.answers;
+  }
+
+  /**
+   * Get the number of votes a player still has
+   *
+   * @return the number of votes
+   */
+  public int getVotes() {
+    return nVotes;
+  }
+
+  /**
+   * Set the number of votes a player has
+   *
+   * @param nVotes
+   *          the new number of votes to set
+   */
+  public void setVotes(int nVotes) {
+    this.nVotes = nVotes;
+  }
+
+  /**
+   * Use a player's vote (decrease num votes by one)
+   *
+   */
+  public void useVote() {
+    this.nVotes--;
   }
 
 }

@@ -31,8 +31,9 @@ public class Main extends Application {
   public void start(Stage primaryStage) {
     try {
       GameServer server = new GameServer();
-      Game game = new Game(server);
+      Game game = new Game();
       Pane root = new GamePane(server, game);
+      server.setGame(game);
 
       primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
         @Override

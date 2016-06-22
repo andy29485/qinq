@@ -18,17 +18,8 @@
 
 package qinq.resource;
 
-import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.handler.DefaultHandler;
-
-import qinq.application.GameServer;
 
 /**
  * Game
@@ -46,25 +37,13 @@ public class Game extends GameObject {
    * The current round that is being played.
    */
   private Round        currentRound;
-  /**
-   * The game server that is hosting the game/
-   */
-  private GameServer   server;
 
   /**
    * @param questions
    *          that can be used to play the game
    */
-  public Game(GameServer server) {
+  public Game() {
     this.players = new ArrayList<Player>();
-    this.server = server;
-    server.addHandle(new DefaultHandler() {
-      @Override
-      public void handle(String target, Request baseRequest,
-          HttpServletRequest request, HttpServletResponse response) {
-        // TODO handle requests
-      }
-    });
   }
 
   /**
@@ -76,13 +55,14 @@ public class Game extends GameObject {
    *          socket to connect to the player's device
    * @return whether the player has be created successfully
    */
-  public boolean addPlayer(String strName, InetSocketAddress socket) {
+  public int addPlayer(String strName) {
     for (Player player : players) {
       if (player.getName().equalsIgnoreCase(strName))
-        return false;
+        return -1;
     }
-    this.players.add(new Player(strName, socket));
-    return true;
+    Player p = new Player(strName);
+    this.players.add(p);
+    return p.getID();
   }
 
   /**
@@ -103,11 +83,71 @@ public class Game extends GameObject {
   }
 
   /**
+   * Get a player by name.
+   *
+   * @param name
+   *          the name of the player to find(case insensitive).
+   * @return the player object, or null if player was not found.
+   */
+  public Player getPlayerByName(String name) {
+    for (Player p : this.players) {
+      if (p.getName().equalsIgnoreCase(name))
+        return p;
+    }
+    return null;
+  }
+
+  /**
+   * Get a player by id.
+   *
+   * @param id
+   *          the id of the player to find.
+   * @return the player object, or null if player was not found.
+   */
+  public Player getPlayerById(int id) {
+    for (Player p : this.players) {
+      if (p.getID() == id)
+        return p;
+    }
+    return null;
+  }
+
+  /**
    * Get the current round.
    *
    * @return the current round
    */
   public Round getRound() {
     return this.currentRound;
+  }
+
+  /**
+   * Get a answer by id.
+   *
+   * @param id
+   *          the id of the answer to find.
+   * @return the answer object, or null if answer was not found.
+   */
+  public Answer getAnswerById(int id) {
+    for (Answer a : this.currentRound.getAnswers()) {
+      if (a.getID() == id)
+        return a;
+    }
+    return null;
+  }
+
+  /**
+   * Get a question by id.
+   *
+   * @param id
+   *          the id of the question to find.
+   * @return the question object, or null if question was not found.
+   */
+  public Question getQuestionById(int id) {
+    for (Question q : this.currentRound.getQuestions()) {
+      if (q.getID() == id)
+        return q;
+    }
+    return null;
   }
 }

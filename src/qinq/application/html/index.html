@@ -1,13 +1,38 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="UTF-8">
-<link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css">
-<link rel="icon" type="image/vnd.microsoft.icon"
-     href="qinq.ico" />
-<title>QINQ</title>
-</head>
-<body>
-TODO
-</body>
+  <head>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" type="text/css" href="css/styles.css" />
+		<link rel="icon" type="image/vnd.microsoft.icon" href="qinq.ico" />
+		<title>QINQ</title>
+	</head>
+	<body>
+    <script src="js/script.js"></script>
+		<header id="header">QINQ</header>
+		<div id="welcome">
+		  TODO
+      <form>
+        <input type="text" name="player-name" id="name-field">
+      </form>
+      <span id="name-error" style='{display:"block"}'>Name in use</span>
+      <button onclick="createPlayer()">Create Player</button>
+      <button onclick="createPlayer()">Spectate</button>
+		</div>
+    <div id="question-box" style='{display:"block"}'>
+      <div class="timer">TODO</div>
+      <div id="question">TODO</div>
+      <form>
+        <input type="text" name="answer" id="answer-field">
+      </form>
+      <button onclick="submitAnswer()">Submit</button>
+    </div>
+    <div id="vote-box" style='{display:"block"}'>
+      <div class="timer">TODO</div>
+      <section id="answers">
+        <ul>
+          
+        </ul>
+      </section>
+    </div>
+	</body>
 </html>

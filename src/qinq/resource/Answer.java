@@ -18,7 +18,8 @@
 
 package qinq.resource;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Answer
@@ -30,19 +31,23 @@ public class Answer extends GameObject {
   /**
    * The Player answering the question
    */
-  private Player       p;
+  private Player               p;
   /**
    * The questions linked to this answer
    */
-  private Question     q;
+  private Question             q;
   /**
    * The actual value for this answer
    */
-  private String       strAnswer;
+  private String               strAnswer;
   /**
    * List of people that vote for this question
    */
-  private List<Player> votes;
+  private Map<Player, Integer> votes;
+  /**
+   * Total number of answers, use for generating answer IDs.
+   */
+  private static int           nAnswers = 0;
 
   /**
    * @param p
@@ -51,9 +56,11 @@ public class Answer extends GameObject {
    *          question linked to this answer
    */
   public Answer(Player p, Question q) {
+    super(Answer.nAnswers++);
     this.p = p;
     this.q = q;
-    p.getAnswers().add(this);
+    this.votes = new HashMap<Player, Integer>();
+    this.p.getAnswers().add(this);
   }
 
   /**
@@ -107,8 +114,24 @@ public class Answer extends GameObject {
    *
    * @return the votes
    */
-  public List<Player> getVotes() {
+  public Map<Player, Integer> getVotes() {
     return votes;
+  }
+
+  /**
+   * Get the players that voted for this question
+   *
+   * @return the votes
+   */
+  public int vote(Player p) {
+    if (p.getVotes() > 1) {
+      if (this.votes.get(p) == null)
+        this.votes.put(p, 1);
+      else
+        this.votes.replace(p, this.votes.get(p) + 1);
+      p.useVote();
+    }
+    return this.votes.get(p);
   }
 
 }

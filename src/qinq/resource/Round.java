@@ -31,16 +31,23 @@ import java.util.concurrent.ThreadLocalRandom;
  * @version 1.0, 2016-06-20
  *
  */
-public class Round extends GameObject {
+public class Round {
   /**
    * Name of the round to display
    */
-  private int            strRoundName;
-
+  private String         strRoundName;
   /**
    * Questions associated with this round
    */
   private List<Question> questions;
+  /**
+   * Question currently being voted on
+   */
+  private Question       question;
+  /**
+   * TIme left(in seconds) for the current action
+   */
+  private int            dTime;
 
   /**
    * @param nRoundType
@@ -70,6 +77,8 @@ public class Round extends GameObject {
       tmpPlayers.addAll(players);
     }
 
+    this.dTime = 0;
+
     switch (nRoundType) {
       case 0:// Normal
         for (int i = 0; i < players.size(); i++) {
@@ -97,8 +106,29 @@ public class Round extends GameObject {
    *
    * @return the Round's Name
    */
-  public int getRoundName() {
-    return strRoundName;
+  public String getRoundName() {
+    return this.strRoundName;
+  }
+
+  /**
+   * Get the questions used in this round
+   *
+   * @return the Round's Name
+   */
+  public List<Question> getQuestions() {
+    return this.questions;
+  }
+
+  /**
+   * Get the answers used in this round
+   *
+   * @return the Round's Name
+   */
+  public List<Answer> getAnswers() {
+    List<Answer> answers = new ArrayList<Answer>();
+    for (Question question : this.questions)
+      answers.addAll(question.getAnswers());
+    return answers;
   }
 
   /**
@@ -107,7 +137,43 @@ public class Round extends GameObject {
    * @param strRoundName
    *          the name to set
    */
-  public void setRoundName(int strRoundName) {
+  public void setRoundName(String strRoundName) {
     this.strRoundName = strRoundName;
+  }
+
+  public Question getQuestion() {
+    return question;
+  }
+
+  public int getTime() {
+    return this.dTime;
+  }
+
+  public void wait(int time) {
+    this.dTime = time;
+    while (this.dTime > 0) {
+      try {
+        Thread.sleep(1000);
+      }
+      catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+      this.dTime--;
+    }
+  }
+
+  public void answer() {
+    this.wait(Question.getAnswerTime() * Question.getNumAnswers());
+  }
+
+  public void vote() {
+    for (Question question : this.questions) {
+      this.question = question;
+      this.wait(Question.getVoteTime() * this.question.getAnswers().size());
+
+      // TODO display results?
+
+      // TODO save question results
+    }
   }
 }

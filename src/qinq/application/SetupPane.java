@@ -45,8 +45,7 @@ public class SetupPane extends BorderPane {
     });
 
     buttonExit.setOnAction(e -> {
-      server.stop();
-      System.exit(0);
+      root.exit();
     });
     bottom.getChildren().add(buttonStart);
     bottom.getChildren().add(buttonOpt);

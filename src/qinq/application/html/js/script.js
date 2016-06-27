@@ -149,7 +149,7 @@ function getInfo() {
       }
     }
     
-    //window.setTimeout(getInfo, 1000);
+    window.setTimeout(getInfo, 1000);
   });
 }
 

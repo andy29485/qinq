@@ -83,18 +83,27 @@ public class Game extends GameObject {
    * Start the game
    */
   public void start(List<String> questions) {
-    this.currentRound = new Round(0, "Round 1", this.players, questions);
-    this.currentRound.answer();
-    this.currentRound.vote();
+    if (this.currentRound != null)
+      return;
+    new Thread() {
+      @Override
+      public void run() {
+        Game.this.currentRound =
+            new Round(0, "Round 1", Game.this.players, questions);
+        Game.this.currentRound.answer();
+        Game.this.currentRound.vote();
 
-    this.currentRound = new Round(0, "Round 2", this.players, questions);
-    this.currentRound.answer();
-    this.currentRound.vote();
+        Game.this.currentRound =
+            new Round(0, "Round 2", Game.this.players, questions);
+        Game.this.currentRound.answer();
+        Game.this.currentRound.vote();
 
-    this.currentRound = new Round(1, "Final Round", this.players, questions);
-    this.currentRound.answer();
-    this.currentRound.vote();
-    // TODO
+        Game.this.currentRound =
+            new Round(1, "Final Round", Game.this.players, questions);
+        Game.this.currentRound.answer();
+        Game.this.currentRound.vote();
+      }
+    }.start();
   }
 
   /**

@@ -145,4 +145,19 @@ public class Question extends GameObject {
     Question.dVoteTime = dVoteTime;
   }
 
+  /**
+   * Check if a player is answering this question
+   *
+   * @param p
+   *          the player to check
+   * @return true if the player is answering the question
+   */
+  public boolean isAnswering(Player p) {
+    for (Answer a : this.lAnswers) {
+      if (a.getPlayer().equals(p))
+        return true;
+    }
+    return false;
+  }
+
 }

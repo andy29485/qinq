@@ -50,8 +50,13 @@ public class GameUI extends ScrollPane {
     this.setup.refreshPlayers();
   }
 
+  public void exit() {
+    this.server.stop();
+    System.exit(0);
+  }
+
   public void startGame() {
-    // TODO game.start(questions);
+    this.game.start(this.options.getQuestions());
     // TODO setContent to some pane to display during the game
     // TODO return to setup when game finishes? OR should this be done by above?
   }

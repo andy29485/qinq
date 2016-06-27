@@ -203,7 +203,9 @@ public class GameServer {
               jsonOut.put("question", a.getQuestion());
             }
             else if (GameServer.this.game.getRound() != null
-                && GameServer.this.game.getRound().getQuestion() != null) {
+                && GameServer.this.game.getRound().getQuestion() != null
+                && !GameServer.this.game.getRound().getQuestion()
+                    .isAnswering(p)) {
               jsonOut.put("action", "vote");
               jsonOut.put("time", time);
               jsonOut.put("question", g.getRound().getQuestion().getQuestion());

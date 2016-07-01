@@ -60,7 +60,7 @@ function onLoad() {
 function createPlayer() {
   var name = document.getElementById('name-field').value;
   
-  sendData({'action':'create user', 'name':name}, function(json) {
+  sendData({'action':'create user', 'name':name.trim()}, function(json) {
     if(json['created'] == 'true') {
       player_id   = json['id'];
       player_name = json['name'];

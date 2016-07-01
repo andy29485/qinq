@@ -6,6 +6,7 @@ This project is distributed under the GPLv3 Licence. [![GPLv3 License](http://im
 
 ## Contributors
 - Andriy Zasypkin <Andy29485>
+- Nelson Chen
 
 ## How To Use
 TODO

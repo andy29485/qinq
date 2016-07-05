@@ -90,6 +90,10 @@ function submitAnswer() {
   sendData(data, function(x) {});
   document.getElementById("question-box").style.display = 'none';
   document.getElementById("timer").style.display        = 'none';
+  
+  document.getElementById('answer-field').value         = '';
+  
+  state = 'waiting';
 }
 
 function submitVote(aid) {

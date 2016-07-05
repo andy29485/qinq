@@ -195,7 +195,9 @@ public class GameServer {
           else
             time = 0;
           if (json.getString("state").equalsIgnoreCase("waiting")) {
-            if (p.getAnswers().size() > 0) {
+            if (p.getAnswers().size() > 0
+                && GameServer.this.game.getRound() != null
+                && GameServer.this.game.getRound().getQuestion() == null) {
               a = p.getAnswers().get(0);
               jsonOut.put("action", "answer");
               jsonOut.put("time", time);
@@ -204,16 +206,16 @@ public class GameServer {
             }
             else if (GameServer.this.game.getRound() != null
                 && GameServer.this.game.getRound().getQuestion() != null
-                && !GameServer.this.game.getRound().getQuestion()
-                    .isAnswering(p)) {
+                && !GameServer.this.game.getRound().getQuestion().isAnswering(p)
+                && p.getVotes() > 0) {
               jsonOut.put("action", "vote");
               jsonOut.put("time", time);
               jsonOut.put("question", g.getRound().getQuestion().getQuestion());
               jsonOut.put("votes", p.getVotes());
               JSONArray jSONArray = new JSONArray();
               for (Answer tmp : g.getRound().getQuestion().getAnswers()) {
-                jSONArray.put(new JSONObject().put("answer", tmp.getAnswer()));
-                jSONArray.put(new JSONObject().put("aid", tmp.getID()));
+                jSONArray.put(new JSONObject().put("answer", tmp.getAnswer())
+                    .put("aid", tmp.getID()));
               }
               jsonOut.put("answers", jSONArray);
             }

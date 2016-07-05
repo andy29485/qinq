@@ -88,7 +88,7 @@ public class Answer extends GameObject {
    *          the answer to set
    */
   public void setAnswer(String strAnswer) {
-    this.strAnswer = strAnswer;
+    this.strAnswer = strAnswer.toUpperCase();
   }
 
   /**

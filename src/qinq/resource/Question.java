@@ -52,9 +52,12 @@ public class Question extends GameObject {
    */
   private static int   nQuestions  = 0;
 
-  public Question(String strValue, Player... players) {
+  public Question(String strValue, List<Player> players) {
     super(Question.nQuestions++);
+
     this.strValue = strValue;
+    this.lAnswers = new ArrayList<Answer>();
+
     for (Player player : players) {
       this.lAnswers.add(new Answer(player, this));
     }

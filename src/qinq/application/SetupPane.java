@@ -57,15 +57,12 @@ public class SetupPane extends BorderPane {
     this.setBottom(bottom);
   }
 
-  public void refreshPlayers() {
-    for (Player player : this.game.getPlayers()) {
-      if (!this.players.getChildren().contains(player.getLabel()))
-        Platform.runLater(new Runnable() {
-          @Override
-          public void run() {
-            SetupPane.this.players.getChildren().add(player.getLabel());
-          }
-        });
-    }
+  public void addPlayer(Player p) {
+    Platform.runLater(new Runnable() {
+      @Override
+      public void run() {
+        SetupPane.this.players.getChildren().add(p.getLargeLabel());
+      }
+    });
   }
 }

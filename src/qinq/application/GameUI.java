@@ -46,8 +46,8 @@ public class GameUI extends ScrollPane {
     this.setContent(this.options);
   }
 
-  public void refreshPlayers() {
-    this.setup.refreshPlayers();
+  public void addPlayer(Player p) {
+    this.setup.addPlayer(p);
   }
 
   public void exit() {

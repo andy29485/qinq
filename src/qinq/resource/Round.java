@@ -45,9 +45,21 @@ public class Round {
    */
   private Question       question;
   /**
-   * TIme left(in seconds) for the current action
+   * Time left(in seconds) for the current action
    */
   private int            dTime;
+  /**
+   * The GamePane on which stuff will be displayed on for the GM
+   */
+  private GamePane       display;
+  /**
+   * List of player 'participating' in this round
+   */
+  private List<Player>   players;
+  /**
+   * LiThe type of round that this is
+   */
+  private int            nRoundType;
 
   /**
    * @param nRoundType
@@ -86,12 +98,12 @@ public class Round {
           for (int j = 0; j < Question.getNumAnswers(); j++) {
             do {
               random = ThreadLocalRandom.current().nextInt(tmpPlayers.size());
-            } while (!playersToAdd.contains(tmpPlayers.get(random)));
+            } while (playersToAdd.contains(tmpPlayers.get(random)));
             playersToAdd.add(tmpPlayers.remove(random));
           }
           random = ThreadLocalRandom.current().nextInt(questions.size());
           String strQ = questions.remove(random);
-          Question q = new Question(strQ, (Player[]) playersToAdd.toArray());
+          Question q = new Question(strQ, playersToAdd);
           this.questions.add(q);
         }
         break;
@@ -177,6 +189,7 @@ public class Round {
         e.printStackTrace();
       }
       this.dTime--;
+      this.display.refresh();
     }
     try {
       Thread.sleep(3000);

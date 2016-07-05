@@ -18,7 +18,13 @@
 
 package qinq.resource;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 
 /**
  * Question
@@ -163,4 +169,38 @@ public class Question extends GameObject {
     return false;
   }
 
+  /**
+   * Get the voting choices for this question in a displayable form
+   *
+   * @return a pane with the question and answers for this question
+   */
+  public Node getVotingPane() {
+    BorderPane voting = new BorderPane();
+    voting.setTop(new Label(this.strValue));
+
+    FlowPane answers = new FlowPane();
+    for (Answer answer : this.lAnswers)
+      answers.getChildren().add(answer.getAnonAnswer());
+    voting.setCenter(answers);
+
+    return voting;
+  }
+
+  /**
+   * Get the results for this questions in a displayable form
+   *
+   * @return a pane with the results for this question
+   */
+  public Node getResultsPane() {
+    // TODO animation?
+    BorderPane results = new BorderPane();
+    results.setTop(new Label(this.strValue));
+
+    FlowPane answers = new FlowPane();
+    for (Answer answer : this.lAnswers)
+      answers.getChildren().add(answer.getFinalAnswer());
+    results.setCenter(answers);
+
+    return results;
+  }
 }

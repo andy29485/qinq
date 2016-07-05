@@ -18,8 +18,17 @@
 
 package qinq.application;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
+import javafx.application.Platform;
 import javafx.scene.control.ScrollPane;
 import qinq.resource.Game;
+import qinq.resource.Player;
 
 public class GameUI extends ScrollPane {
   private GameServer  server;
@@ -55,9 +64,40 @@ public class GameUI extends ScrollPane {
     System.exit(0);
   }
 
+  public void setGame(Game g) {
+    this.game = g;
+  }
+
   public void startGame() {
-    this.game.start(this.options.getQuestions());
+
+    // This stuff probably should not be here, or maybe it should?
+    List<String> questions = new ArrayList<String>();
+    for (String question : this.options.getQuestions())
+      questions.add(question);
+
+    InputStream in =
+        this.getClass().getResourceAsStream("../resource/questions/misc.txt");
+    BufferedReader br = new BufferedReader(new InputStreamReader(in));
+    String question;
+    try {
+      while ((question = br.readLine()) != null)
+        questions.add(question);
+    }
+    catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    GamePane display = new GamePane(game);
+    Platform.runLater(new Runnable() {
+      @Override
+      public void run() {
+        GameUI.this.setContent(display);
+      }
+    });
+    this.game.start(questions, display);
     // TODO setContent to some pane to display during the game
-    // TODO return to setup when game finishes? OR should this be done by above?
+
+    // TODO create a new game and setGame to other objects
+    this.goToSetup();
   }
 }

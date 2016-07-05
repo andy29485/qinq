@@ -21,6 +21,11 @@ package qinq.resource;
 import java.util.HashMap;
 import java.util.Map;
 
+import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
+
 /**
  * Answer
  *
@@ -119,19 +124,53 @@ public class Answer extends GameObject {
   }
 
   /**
+   * Get the number of votes this answer received
+   *
+   * @return the number votes
+   */
+  public int getNumVotes() {
+    int nVotes = 0;
+    for (Player p : this.votes.keySet()) {
+      nVotes += this.votes.get(p);
+    }
+    return nVotes;
+  }
+
+  /**
    * Get the players that voted for this question
    *
    * @return the votes
    */
   public int vote(Player p) {
-    if (p.getVotes() > 1) {
-      if (this.votes.get(p) == null)
-        this.votes.put(p, 1);
-      else
+    if (p.getVotes() > 0) {
+      if (this.votes.keySet().contains(p))
         this.votes.replace(p, this.votes.get(p) + 1);
+      else
+        this.votes.put(p, 1);
       p.useVote();
     }
     return this.votes.get(p);
   }
 
+  public Node getAnonAnswer() {
+    BorderPane container = new BorderPane();
+    container.setCenter(new Label(this.strAnswer));
+    return container;
+  }
+
+  public Node getFinalAnswer() {
+    BorderPane container = new BorderPane();
+    container.setCenter(new Label(this.strAnswer));
+
+    container.setTop(p.getNameLabel());
+
+    FlowPane voters = new FlowPane();
+    for (Player p : this.votes.keySet())
+      voters.getChildren()
+          .add(p.getNameLabel(String.valueOf(this.votes.get(p))));
+
+    container.setBottom(voters);
+
+    return container;
+  }
 }

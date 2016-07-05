@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+import qinq.application.GamePane;
+
 /**
  * Round.
  *
@@ -79,17 +81,22 @@ public class Round {
    *          players that will participate in this round.
    * @param questions
    *          list of strings that can potentially be used as questions.
+   * @param display
+   *          the GamePane on which stuff will be displayed on for the GM
    */
   public Round(int nRoundType, String strRoundName, List<Player> players,
-      List<String> questions) {
+      List<String> questions, GamePane display) {
     List<Player> tmpPlayers = new ArrayList<Player>();
+    this.display = display;
     int random;
+    this.dTime = 0;
+    this.questions = new ArrayList<Question>();
+    this.players = players;
+    this.nRoundType = nRoundType;
 
     for (int i = 0; i < Question.getNumAnswers(); i++) {
       tmpPlayers.addAll(players);
     }
-
-    this.dTime = 0;
 
     switch (nRoundType) {
       case 0:// Normal
@@ -199,18 +206,63 @@ public class Round {
     }
   }
 
+  /**
+   * Calculate the amount of time needed to answer the questions and wait for
+   * that long.
+   */
   public void answer() {
+    this.display.changeState("Answering");
     this.wait(Question.getAnswerTime() * Question.getNumAnswers());
   }
 
+  /**
+   * Calculate the amount of time needed to vote the questions and wait for that
+   * long.
+   *
+   * Also display the current questions that is being voted on.
+   */
   public void vote() {
     for (Question question : this.questions) {
+      this.display.changeState("Voting");
+      this.setVotes();
+
       this.question = question;
+      this.display.setConent(this.question.getVotingPane());
       this.wait(Question.getVoteTime() * this.question.getAnswers().size());
 
-      // TODO display results?
+      this.displayResults();
+    }
+  }
 
-      // TODO save question results
+  /**
+   * Display the result for the current question and move on after three seconds
+   */
+  public void displayResults() {
+    this.display.changeState("Results");
+    this.display.setConent(this.question.getResultsPane());
+    this.wait(8);
+  }
+
+  /**
+   * Save the result of the current question to a file.
+   */
+  public void saveResults() {
+    // TODO save question results
+  }
+
+  /**
+   * Set the number of votes each player has
+   */
+  public void setVotes() {
+    for (Player p : this.players) {
+      switch (this.nRoundType) {
+        case (0):
+          p.setVotes(1);
+          break;
+        case (1):
+          p.setVotes(3);
+          break;
+      }
     }
   }
 }

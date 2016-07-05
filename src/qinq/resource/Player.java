@@ -87,11 +87,7 @@ public class Player extends GameObject {
     this.strName = strName;
     this.strIp = ip;
     this.setVotes(0);
-    this.label = new Label(this.getName());
     this.color = Player.COLOURS.get(this.getID() % Player.COLOURS.size());
-    this.label
-        .setStyle(String.format("-fx-background-color: %s;", this.getColor()));
-    this.label.getStyleClass().add("player-label");
   }
 
   /**
@@ -178,11 +174,37 @@ public class Player extends GameObject {
   }
 
   /**
-   * Get the player's label
+   * Get the player's label(TODO: with picture)
    *
    * @return the label of the player
    */
-  public Label getLabel() {
-    return this.label;
+  public Node getLargeLabel() {
+    // TODO make this look more complete
+    return this.getNameLabel();
+  }
+
+  /**
+   * Get the player's label(Just the name with colour)
+   *
+   * @return the label of the player
+   */
+  public Node getNameLabel() {
+    return this.getNameLabel("");
+  }
+
+  /**
+   * Get the player's label(Just the name with colour) with additional message
+   *
+   * @return the label of the player
+   */
+  public Node getNameLabel(String message) {
+    Node label;
+    if (!message.isEmpty())
+      label = new Label(String.format("%s - %s", this.getName(), message));
+    else
+      label = new Label(this.getName());
+    label.setStyle(String.format("-fx-background-color: %s;", this.getColor()));
+    label.getStyleClass().add("player-label");
+    return label;
   }
 }

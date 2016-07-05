@@ -115,7 +115,7 @@ public class GameServer {
    * Attach the game instance to the server
    *
    * @param game,
-   *          the game accociated with this server
+   *          the game associated with this server
    */
   public void setGame(Game game) {
     this.game = game;

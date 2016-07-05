@@ -132,23 +132,41 @@ public class Round {
   }
 
   /**
-   * Set the round's name
+   * Set the round's name.
    *
    * @param strRoundName
-   *          the name to set
+   *          the name to set.
    */
   public void setRoundName(String strRoundName) {
     this.strRoundName = strRoundName;
   }
 
+  /**
+   * Get the currently selected question.
+   *
+   * @return the currently selected question.
+   */
   public Question getQuestion() {
     return question;
   }
 
+  /**
+   * Get the amount of time left for the current action.
+   *
+   * There is an extra three seconds added just in case of lag.
+   *
+   * @return the number of seconds left until the current action is over.
+   */
   public int getTime() {
     return this.dTime;
   }
 
+  /**
+   * Wait for a given number of seconds
+   *
+   * @param time
+   *          number of seconds to wait
+   */
   public void wait(int time) {
     this.dTime = time;
     while (this.dTime > 0) {

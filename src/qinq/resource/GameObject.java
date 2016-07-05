@@ -21,8 +21,6 @@ package qinq.resource;
 /**
  * Game Object
  *
- * TODO maybe this is not needed
- *
  * @author az
  * @version 1.0, 2016-06-20
  */

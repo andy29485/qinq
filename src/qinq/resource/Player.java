@@ -42,8 +42,6 @@ public class Player extends GameObject {
   private String                   strIp;
   /**
    * List of Answers for the current Game/Round
-   *
-   * TODO decide whether game or round
    */
   private List<Answer>             answers;
   /**
@@ -54,10 +52,6 @@ public class Player extends GameObject {
    * Colour of the player.
    */
   private String                   color;
-  /**
-   * Label that represents the player.
-   */
-  private Label                    label;
   /**
    * Total number of players, use for generating player IDs.
    */

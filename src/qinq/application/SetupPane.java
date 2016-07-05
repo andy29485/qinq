@@ -14,7 +14,7 @@ import qinq.resource.Player;
 public class SetupPane extends BorderPane {
   private Label    addressLabel;
   private FlowPane players;
-  private Game     game;
+  private Game     game;        // May not even be needed
 
   public SetupPane(GameUI root, GameServer server, Game game) {
     this.addressLabel = new Label(server.getAddress());

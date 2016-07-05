@@ -24,30 +24,38 @@ var state       = 'waiting';
 function onLoad() {
   //visible:
   //document.getElementById("id-name").style.display = 'block';
-  
+
   //not:
   //document.getElementById("id-name").style.display = 'none';
-  
+
   if (!String.prototype.trim) {
     String.prototype.trim = function () {
       return this.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
     };
   }
-  
+
   document.getElementById("welcome").style.display      = 'block';
   document.getElementById("timer").style.display        = 'none';
   document.getElementById("question-box").style.display = 'none';
   document.getElementById("vote-box").style.display     = 'none';
   document.getElementById("name-error").style.display   = 'none';
-  
-  document.getElementById("name-field").addEventListener("keyup",
+
+  document.getElementById("name-field").addEventListener("keypress",
       function(event) {
-    event.preventDefault();
     if (event.keyCode == 13) {
+      event.preventDefault();
       createPlayer();
     }
   });
-  
+
+  document.getElementById("answer-field").addEventListener("keypress",
+      function(event) {
+    if (event.keyCode == 13) {
+      event.preventDefault();
+      submitAnswer();
+    }
+  });
+
   document.getElementById("answer-field").addEventListener("keyup",
       function(event) {
     event.preventDefault();
@@ -57,14 +65,18 @@ function onLoad() {
   });
 }
 
+function spectate() {
+  //TODO
+}
+
 function createPlayer() {
   var name = document.getElementById('name-field').value;
-  
+
   sendData({'action':'create user', 'name':name.trim()}, function(json) {
     if(json['created'] == 'true') {
       player_id   = json['id'];
       player_name = json['name'];
-      document.getElementById('name').innerHTML        = player_name; 
+      document.getElementById('name').innerHTML        = player_name;
       document.getElementById("welcome").style.display = 'none';
       document.getElementById("header").style.backgroundColor=json['color'];
       getInfo();
@@ -73,16 +85,16 @@ function createPlayer() {
       document.getElementById("welcome").style.display    = 'block';
       document.getElementById("name-error").style.display = 'block';
     }
-  
+
   });
 }
 
 function submitAnswer() {
   document.getElementById("welcome").style.display      = 'none';
   document.getElementById("vote-box").style.display     = 'none';
-  
+
   var answer = document.getElementById('answer-field').value;
-  var aid = document.getElementById('answer-field').dataset.id; 
+  var aid = document.getElementById('answer-field').dataset.id;
   if(aid == undefined || !answer.trim()) {
     return null;
   }
@@ -90,37 +102,40 @@ function submitAnswer() {
   sendData(data, function(x) {});
   document.getElementById("question-box").style.display = 'none';
   document.getElementById("timer").style.display        = 'none';
-  
+
   document.getElementById('answer-field').value         = '';
-  
+
   state = 'waiting';
 }
 
 function submitVote(aid) {
-  sendData({'action':'vote', 'id':player_id.toString(), 
+  sendData({'action':'vote', 'id':player_id.toString(),
             'aid':aid.toString()}, function(json) {
     if(json['left'] == 0 || json['left'] == '0') {
       removeElementsByClass('vote-option');
     }
     else {
       //TODO somehow incorporate json['voted'] into this
-      
+      //         (number of times voted on that answer)
+
     }
   });
+  state = 'waiting';
 }
 
 function getInfo() {
   sendData({'action':'get state', 'state':state, 'id':player_id.toString()},
       function(json) {
+    console.log(JSON.stringify(json))
+
     timer = json['time'];
-    
-  
+
     if(timer <= 0) {
       document.getElementById("timer").style.display = 'none';
     }
-    
+
     document.getElementById("timer").innerHTML = timer;
-    
+
     if(state == 'answering' || state =='voting') {
       if(timer <= 0) {
         state = 'waiting';
@@ -128,17 +143,25 @@ function getInfo() {
         document.getElementById("question-box").style.display = 'none';
         document.getElementById("vote-box").style.display     = 'none';
       }
+      else {
+        document.getElementById("timer").style.display = 'block';
+      }
     }
-    
     else {
       if(json['action'] == 'answer') {
         document.getElementById("answer-question").innerHTML = json['question'];
-        document.getElementById('answer-field').dataset.id = json['aid'];
+        document.getElementById('answer-field').dataset.id   = json['aid'];
+        document.getElementById("question-box").style.display = 'block';
         state = 'answering';
       }
       else if(json['action'] == 'vote') {
+        document.getElementById("answers").innerHTML = '';
         document.getElementById("vote-question").innerHTML = json['question'];
         document.getElementById("votes-left").innerHTML = json['votes'];
+        if(json['votes'] > 1)
+          document.getElementById("votes-left").style.display = 'block';
+        else
+          document.getElementById("votes-left").style.display = 'none';
         var element = document.getElementById("answers");
         json['answers'].forEach(function(answer) {
           var div = document.createElement("div");
@@ -149,10 +172,13 @@ function getInfo() {
           div.appendChild(node);
           element.appendChild(div);
         });
-        state = 'voting';
+        if(json['votes'] > 0){
+          document.getElementById("vote-box").style.display = 'block';
+          state = 'voting';
+        }
       }
     }
-    
+
     window.setTimeout(getInfo, 1000);
   });
 }
@@ -165,17 +191,17 @@ function sendData(data, callback) {
   else {
       xmlhttp = new ActiveXObject("Microsoft.XMLHTTP"); //for IE6, IE5
   }
-  
+
   //Create a asynchronous GET request
   xmlhttp.open("POST", 'data.json?q='+Math.random(), true);
   xmlhttp.setRequestHeader("Content-type", "application/json");
   xmlhttp.send(JSON.stringify(data));
-  
+
   xmlhttp.onreadystatechange = function() {
     if (xmlhttp.readyState == 4) {
       if (xmlhttp.status >= 200 && xmlhttp.status <= 299) {
         callback(JSON.parse(xmlhttp.responseText));
-      } 
+      }
     }
   };
 }

@@ -75,8 +75,8 @@ public class GameUI extends ScrollPane {
     for (String question : this.options.getQuestions())
       questions.add(question);
 
-    InputStream in =
-        this.getClass().getResourceAsStream("../resource/questions/misc.txt");
+    InputStream in = this.getClass()
+        .getResourceAsStream("/qinq/resource/questions/misc.txt");
     BufferedReader br = new BufferedReader(new InputStreamReader(in));
     String question;
     try {

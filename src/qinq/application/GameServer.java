@@ -20,6 +20,9 @@ package qinq.application;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.UnknownHostException;
 
@@ -34,6 +37,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.util.resource.Resource;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -62,10 +66,20 @@ public class GameServer {
 
     ResourceHandler resource_handler = new ResourceHandler();
     resource_handler.setDirectoriesListed(true);
-    URL baseUrl = this.getClass().getResource("html");
-    resource_handler.setResourceBase(baseUrl.toExternalForm());
-    resource_handler.setWelcomeFiles(new String[] { "index.html" });
-
+    try {
+      URL webRootLocation =
+          this.getClass().getResource("/qinq/application/html/index.html");
+      URI webRootUri = URI.create(webRootLocation.toURI().toASCIIString()
+          .replaceFirst("/index.html$", "/"));
+      resource_handler.setBaseResource(Resource.newResource(webRootUri));
+      resource_handler.setWelcomeFiles(new String[] { "index.html" });
+    }
+    catch (MalformedURLException e) {
+      e.printStackTrace();
+    }
+    catch (URISyntaxException e) {
+      e.printStackTrace();
+    }
     HandlerList handlers = new HandlerList();
     handlers.setHandlers(new Handler[] { new MyHandler(), resource_handler });
     this.server.setHandler(handlers);

@@ -186,9 +186,9 @@ public class Round {
    * @param time
    *          number of seconds to wait
    */
-  public void wait(int time) {
+  public void wait(int time, TimeChecker tc) {
     this.dTime = time;
-    while (this.dTime > 0) {
+    while (this.dTime > 0 && (tc == null || !tc.canMoveOn())) {
       try {
         Thread.sleep(1000);
       }
@@ -212,7 +212,12 @@ public class Round {
    */
   public void answer() {
     this.display.changeState("Answering");
-    this.wait(Question.getAnswerTime() * Question.getNumAnswers());
+    this.wait(Question.getAnswerTime() * Question.getNumAnswers(), () -> {
+      for (Player p : this.players)
+        if (p.getAnswers().size() > 0)
+          return false;
+      return true;
+    });
   }
 
   /**
@@ -228,7 +233,13 @@ public class Round {
 
       this.question = question;
       this.display.setConent(this.question.getVotingPane());
-      this.wait(Question.getVoteTime() * this.question.getAnswers().size());
+      this.wait(Question.getVoteTime() * this.question.getAnswers().size(),
+          () -> {
+            for (Player p : this.players)
+              if (p.getVotes() > 0)
+                return false;
+            return true;
+          });
 
       this.displayResults();
     }
@@ -240,7 +251,7 @@ public class Round {
   public void displayResults() {
     this.display.changeState("Results");
     this.display.setConent(this.question.getResultsPane());
-    this.wait(8);
+    this.wait(12, null);
   }
 
   /**

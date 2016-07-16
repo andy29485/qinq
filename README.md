@@ -51,3 +51,4 @@ This project is distributed under the GPLv3 Licence.
 | Allow internet based connecting(non-local) | considering |
 | allow selection of categorised answers | complete |
 | allow addition of custom categories | complete |
+| end timer if action was complete | in progress |

@@ -18,20 +18,34 @@
 
 package qinq.application;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import qinq.resource.Game;
 import qinq.resource.Question;
 
 public class OptionsPane extends BorderPane {
-  TextArea questions;
+  TextArea                   questions;
+  Map<CheckBox, Set<String>> categories;
+  FlowPane                   categoryPane;
+  FlowPane                   options;
 
   public OptionsPane(GameUI root, Game game) {
     Label header = new Label("Game Options");
@@ -62,17 +76,135 @@ public class OptionsPane extends BorderPane {
     // TODO create an option for this
     Question.setNumAnswers(2);
 
-    questions = new TextArea();
+    this.questions = new TextArea();
+
+    this.categories = new HashMap<CheckBox, Set<String>>();
+    this.categoryPane = new FlowPane();
+    this.options = new FlowPane();
+    this.refresh();
+
+    this.options.getChildren().addAll(this.categoryPane);
+    this.options.getChildren().addAll(new Label("Custom Questions"),
+        this.questions);
 
     this.setTop(header);
-    this.setCenter(questions);
+    this.setCenter(this.options);
     this.setBottom(bottom);
+    this.refresh();
   }
 
-  public List<String> getQuestions() {
-    List<String> lstrQuestions = new ArrayList<String>();
+  public Set<String> getQuestions() {
+    Set<String> lstrQuestions = new HashSet<String>(); // set of questions to
+                                                       // use
+
+    // add questions from custom question text area
     for (String question : this.questions.getText().split("\\s*\\n\\s*"))
-      lstrQuestions.add(question);
+      if (!question.isEmpty())
+        lstrQuestions.add(question);
+
+    // Add questions by category(if selected)
+    for (CheckBox cb : this.categories.keySet())
+      if (cb.isSelected())
+        lstrQuestions.addAll(this.categories.get(cb));
+
     return lstrQuestions;
+  }
+
+  public void refresh() {
+    // Create a temporary container for categories: map check-box -> questions
+    Map<CheckBox, Set<String>> tmp_categories =
+        new HashMap<CheckBox, Set<String>>();
+
+    // Add categories from jar
+    InputStream in = this.getClass()
+        .getResourceAsStream("/qinq/resource/questions/categories.txt");
+    BufferedReader br = new BufferedReader(new InputStreamReader(in));
+    String category;
+    try {
+      // for each category specified in the categories.txt file
+      while ((category = br.readLine()) != null) {
+        if (this.getClass().getResourceAsStream(
+            "/qinq/resource/questions/" + category) != null) {// check if it
+                                                              // exists
+          populateCategories( // Then associate questions in that file with
+              new BufferedReader( // a check box
+                  new InputStreamReader(this.getClass().getResourceAsStream(
+                      "/qinq/resource/questions/" + category))),
+              tmp_categories, category);
+        }
+      }
+    }
+    catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    // Add custom categories
+    File questions_dir = new File("questions");
+    if (questions_dir.exists() && questions_dir.isDirectory()) {
+      for (File category_file : questions_dir.listFiles((dir, name) -> {
+        return name.toLowerCase().endsWith(".txt");
+      })) {
+        try {
+          populateCategories(new BufferedReader(new FileReader(category_file)),
+              tmp_categories, category_file.getName());
+          ;
+        }
+        catch (FileNotFoundException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+
+    // Uncheck previously uncheced categories
+    for (CheckBox cbNew : tmp_categories.keySet()) {
+      cbNew.setSelected(true);
+      for (CheckBox cbOld : this.categories.keySet()) {
+        if (cbNew.getText().equalsIgnoreCase(cbOld.getText())) {
+          cbNew.setSelected(cbOld.isSelected());
+          break;
+        }
+      }
+    }
+
+    // Update
+    this.categories = tmp_categories;
+    this.categoryPane.getChildren().clear();
+    for (CheckBox cb : this.categories.keySet()) {
+      this.categoryPane.getChildren().add(cb);
+    }
+  }
+
+  private static void populateCategories(BufferedReader br,
+      Map<CheckBox, Set<String>> categories, String category) {
+    // Create a collections for storing questions
+    Set<String> questions = new HashSet<String>();
+
+    if (category.matches("(?i)\\.txt$"))
+      category = category.replaceAll("(?i)\\.txt$", "");
+
+    try {
+      String question; // String temporarily stores questions
+      while ((question = br.readLine()) != null) { // read each line into
+                                                   // the question variable
+        if (!question.isEmpty())
+          questions.add(question);// Add non-empty strings into question set
+      }
+      found:
+      {
+        for (CheckBox cb : categories.keySet()) {// if category exists append
+                                                 // questions to existing
+                                                 // category
+          if (cb.getText().equalsIgnoreCase(category)) {
+            categories.get(cb).addAll(questions);
+            break found;
+          }
+        }
+        // otherwise create a new category with said questions
+        categories.put(new CheckBox(category), questions);
+      }
+    }
+    catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 }

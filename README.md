@@ -46,8 +46,8 @@ This project is distributed under the GPLv3 Licence.
 | ---- | :----: |
 | Come up with more questions | outsourcing |
 | Make web-end look better | considering |
-| Make application-end look better | planned |
+| Make application-end look better | in progress |
 | View results on web-end | planned |
 | Allow internet based connecting(non-local) | considering |
-| allow selection of categorised answers | in progress |
-| allow addition of custom categories | planned |
+| allow selection of categorised answers | complete |
+| allow addition of custom categories | complete |

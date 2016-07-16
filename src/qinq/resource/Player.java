@@ -64,12 +64,16 @@ public class Player extends GameObject {
   public static final List<String> COLOURS  =
       Collections.unmodifiableList(new ArrayList<String>() {
                                                   {
-                                                    add("#ff0000");
-                                                    add("#00ff00");
-                                                    add("#0000ff");
-                                                    add("#ff00ff");
-                                                    add("#00ffff");
-                                                    add("#ffff00");
+                                                    add("#ff6666");
+                                                    add("#66ff99");
+                                                    add("#3366ff");
+                                                    add("#d966ff");
+                                                    add("#38e0ff");
+                                                    add("#ffcc66");
+                                                    add("#cc6600");
+                                                    add("#cc33ff");
+                                                    add("#009999");
+                                                    add("#cccc00");
                                                   }
                                                 });
 

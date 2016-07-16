@@ -19,6 +19,8 @@
 package qinq.resource;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -86,36 +88,51 @@ public class Round {
    */
   public Round(int nRoundType, String strRoundName, List<Player> players,
       List<String> questions, GamePane display) {
-    List<Player> tmpPlayers = new ArrayList<Player>();
-    this.display = display;
+    List<Player> tmpPlayers; // for question distribution
+    this.display = display; // the display on the main window
     int random;
     this.dTime = 0;
-    this.questions = new ArrayList<Question>();
-    this.players = players;
+    this.questions = new ArrayList<Question>(); // list of questions to be used
+    this.players = players; // list of players
     this.nRoundType = nRoundType;
-
-    for (int i = 0; i < Question.getNumAnswers(); i++) {
-      tmpPlayers.addAll(players);
-    }
 
     switch (nRoundType) {
       case 0:// Normal
-        for (int i = 0; i < players.size(); i++) {
-          List<Player> playersToAdd = new ArrayList<Player>();
-          for (int j = 0; j < Question.getNumAnswers(); j++) {
-            do {
-              random = ThreadLocalRandom.current().nextInt(tmpPlayers.size());
-            } while (playersToAdd.contains(tmpPlayers.get(random)));
-            playersToAdd.add(tmpPlayers.remove(random));
+        List<Player[]> question_groups = new ArrayList<Player[]>();
+        grouping:
+        do {
+          tmpPlayers = new ArrayList<Player>();
+          for (int i = 0; i < Question.getNumAnswers(); i++) { // add players
+            tmpPlayers.addAll(players);// into a 'hat' that will be drawn from
+                                       // when grouping people for answers
           }
+          for (int i = 0; i < players.size(); i++) {
+            Player[] group = new Player[Question.getNumAnswers()];
+            for (int j = 0; j < Question.getNumAnswers(); j++) {
+              do {
+                if (tmpPlayers.size() < Question.getNumAnswers()
+                    && tmpPlayers.size() > 1
+                    && (new HashSet<Player>(tmpPlayers)).size() == 1)
+                  continue grouping;
+                random = ThreadLocalRandom.current().nextInt(tmpPlayers.size());
+              } while (Arrays.asList(group).contains(tmpPlayers.get(random)));
+              group[j] = tmpPlayers.remove(random);
+            }
+            question_groups.add(group);
+          }
+        } while (tmpPlayers.size() > 0);
+        for (Player[] group : question_groups) {
           random = ThreadLocalRandom.current().nextInt(questions.size());
           String strQ = questions.remove(random);
-          Question q = new Question(strQ, playersToAdd);
+          Question q = new Question(strQ, group);
           this.questions.add(q);
         }
         break;
       case 1:// Final
-        // TODO
+        random = ThreadLocalRandom.current().nextInt(questions.size());
+        String strQ = questions.remove(random);
+        Question q = new Question(strQ, (Player[]) this.players.toArray());
+        this.questions.add(q);
         break;
     }
   }
@@ -185,6 +202,9 @@ public class Round {
    *
    * @param time
    *          number of seconds to wait
+   * @param tc
+   *          functional interface that returns true when the timer should stop
+   *          counting down
    */
   public void wait(int time, TimeChecker tc) {
     this.dTime = time;

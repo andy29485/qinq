@@ -157,16 +157,16 @@ function getInfo() {
       else if(json['action'] == 'vote') {
         document.getElementById("answers").innerHTML = '';
         document.getElementById("vote-question").innerHTML = json['question'];
-        document.getElementById("votes-left").innerHTML = json['votes'];
+        document.getElementById("votes-left-span").innerHTML = json['votes'];
         if(json['votes'] > 1)
-          document.getElementById("votes-left").style.display = 'block';
+          document.getElementById("votes-left-div").style.display = 'block';
         else
-          document.getElementById("votes-left").style.display = 'none';
+          document.getElementById("votes-left-div").style.display = 'none';
         var element = document.getElementById("answers");
         json['answers'].forEach(function(answer) {
           var div = document.createElement("div");
           var node = document.createTextNode(answer['answer']);
-          div.dataset.id = 5;
+          div.dataset.id = answer['aid'];
           div.className = 'vote-option';
           div.setAttribute("onclick", "submitVote(" + answer['aid'] + ")");
           div.appendChild(node);

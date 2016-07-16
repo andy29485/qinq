@@ -9,10 +9,10 @@
 	<body onload="onLoad()">
     <script src="js/script.js"></script>
 		<header id="header">
-      <h1>QINQ</h1>
+      <div id="timer">30</div>
       <div id="name"></div>
+      <h1>QINQ</h1>
 		</header>
-    <div id="timer">TODO</div>
 		<div id="welcome">
       <form>
         <label for="player-name">Name:</label>
@@ -30,8 +30,10 @@
       <button onclick="submitAnswer()">Submit</button>
     </div>
     <div id="vote-box">
+      <div id="votes-left-div">
+        votes left: <span id="votes-left-span">TODO<span></span>
+      </div>
       <div id="vote-question">TODO</div>
-      <div id="votes-left">TODO</div>
       <section id="answers">
         <!-- place holder -->
       </section>

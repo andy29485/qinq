@@ -1,7 +1,4 @@
 @CHARSET "UTF-8";
-h1 {
-	float: left;
-}
 
 header {
   height: 100px;
@@ -11,6 +8,59 @@ header {
 body {
 	background: #000;
 	color: #FFF;
+}
+input {
+	border: 2px solid #668099;
+	background-color: #262626;
+  border-radius: 4px;
+}
+button {
+  margin-top: 10px;
+  background-color: #3d7b8d;
+  border: none;
+  colour: white;
+  padding: 5px 14px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.vote-option:nth-child(odd) {
+  background-color: #363636;
+}
+.vote-option:nth-child(even) {
+  background-color: #5b5b5b;
+}
+.vote-option {
+	margin-top: 5px;
+	height: 1.4em;
+	border-radius: 5px;
+  text-align: center;
+  font-size: 1.6em;
+}
+.vote-option:hover {
+	opacity: 0.8;
+}
+
+#vote-box {
+	margin-top: 13px;
+}
+#vote-question {
+  color: #93b47e;
+  text-align: center;
+  clear: left;
+  font-size: 1.8em;
+}
+#votes-left-div {
+  color: #93b47e;
+  float: left;
+  font-size: .8em;
+}
+#timer {
+  float: right;
+}
+#name {
+  float: left;
 }
 #name-error {
 	color: #F00;

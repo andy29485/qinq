@@ -19,8 +19,6 @@
 package qinq.application;
 
 import javafx.application.Platform;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
@@ -39,20 +37,24 @@ public class SetupPane extends BorderPane {
     this.players = new FlowPane();
     this.game = game;
 
-    this.players.setPadding(new Insets(10, 10, 10, 10));
+    this.setId("setup-pane");
+    this.players.getStyleClass().add("players");
 
     HBox top = new HBox(5);
     HBox bottom = new HBox(20);
+
+    top.getStyleClass().add("top");
+    bottom.getStyleClass().add("bottom");
+
     Button buttonStart = new Button("Start");
     Button buttonOpt = new Button("Options");
     Button buttonExit = new Button("Exit");
 
     this.addressLabel.setId("address-label");
-    top.setId("header");
+    top.getStyleClass().add("header");
     top.getChildren().add(new Label("Go to: "));
     top.getChildren().add(this.addressLabel);
     top.getChildren().add(new Label(" to start playing"));
-    top.setAlignment(Pos.CENTER);
 
     buttonStart.setOnAction(e -> {
       root.startGame();

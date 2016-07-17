@@ -30,14 +30,19 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
+import javafx.scene.control.Spinner;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import qinq.resource.Game;
 import qinq.resource.Question;
 
@@ -45,12 +50,11 @@ public class OptionsPane extends BorderPane {
   TextArea                   questions;
   Map<CheckBox, Set<String>> categories;
   FlowPane                   categoryPane;
-  FlowPane                   options;
+  VBox                       options;
 
   public OptionsPane(GameUI root, Game game) {
     Label header = new Label("Game Options");
-    header.setId("header");
-    // header.resize(this.getWidth(), 100);// TODO should be in css
+    header.getStyleClass().add("header");
 
     HBox bottom = new HBox(20);
     Button buttonStart = new Button("Start");
@@ -73,19 +77,40 @@ public class OptionsPane extends BorderPane {
     bottom.getChildren().add(buttonExit);
     bottom.setAlignment(Pos.CENTER);
 
-    // TODO create an option for this
     Question.setNumAnswers(2);
+    Spinner<Integer> num_answers = new Spinner<Integer>(2, 6, 2);
+    num_answers.valueProperty().addListener(
+        (obs, oldValue, newValue) -> Question.setNumAnswers(newValue));
 
-    this.questions = new TextArea();
+    Game.setMaxPlayers(10);
+    Spinner<Integer> max_players = new Spinner<Integer>(5, 10, 10);
+    num_answers.valueProperty()
+        .addListener((obs, oldValue, newValue) -> Game.setMaxPlayers(newValue));
+    Game.setMinPlayers(10);
+    Spinner<Integer> min_players = new Spinner<Integer>(3, 9, 3);
+    num_answers.valueProperty()
+        .addListener((obs, oldValue, newValue) -> Game.setMinPlayers(newValue));
 
     this.categories = new HashMap<CheckBox, Set<String>>();
+    this.questions = new TextArea();
     this.categoryPane = new FlowPane();
-    this.options = new FlowPane();
+    this.options = new VBox();
+    this.options.setId("options");
     this.refresh();
 
-    this.options.getChildren().addAll(this.categoryPane);
-    this.options.getChildren().addAll(new Label("Custom Questions"),
-        this.questions);
+    this.questions.setTooltip(new Tooltip("One Question per Line"));
+    this.categoryPane.setId("categories:");
+
+    this.options.getChildren().addAll(new Separator(Orientation.HORIZONTAL),
+        new Label("Categories:"), this.categoryPane);
+
+    this.options.getChildren().addAll(new Separator(Orientation.HORIZONTAL),
+        new Label("Custom Questions:"), this.questions);
+
+    this.options.getChildren().addAll(new Separator(Orientation.HORIZONTAL),
+        new HBox(10, new Label("Number of Answers per question:"), num_answers),
+        new HBox(20, new Label("Min Players:"), min_players),
+        new HBox(20, new Label("Max Players:"), max_players));
 
     this.setTop(header);
     this.setCenter(this.options);

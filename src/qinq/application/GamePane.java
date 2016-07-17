@@ -39,8 +39,11 @@ public class GamePane extends BorderPane {
     this.labelState = new Label("Answering");
     this.labelTime = new Label("");
     this.header = new HBox();
-
     this.players = new FlowPane();
+
+    this.header.getStyleClass().add("header");
+    this.players.getStyleClass().add("players");
+
     this.header.getChildren().addAll(this.labelState, this.labelTime);
     this.setConent(players);
 
@@ -59,6 +62,7 @@ public class GamePane extends BorderPane {
           GamePane.this.labelTime.setText("");
         if (GamePane.this.labelState.getText().equalsIgnoreCase("Answering")) {
           GamePane.this.players.getChildren().clear();
+          GamePane.this.players.getChildren().add(new Label("Waiting on:"));
           for (Player p : GamePane.this.game.getPlayers()) {
             if (p.getAnswers().size() > 0)
               GamePane.this.players.getChildren().add(p.getLargeLabel());

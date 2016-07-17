@@ -60,7 +60,6 @@ public class GameServer {
    * Create an instance of the game server to use
    */
   public GameServer() {
-    // TODO allow setting of custom ports?
     this.server = new Server(8070);
     // this.server.addConnector(new ServerConnector(this.server));
 

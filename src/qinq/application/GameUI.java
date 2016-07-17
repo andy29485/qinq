@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javafx.application.Platform;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ScrollPane;
 import qinq.resource.Game;
 import qinq.resource.Player;
@@ -45,14 +46,26 @@ public class GameUI extends ScrollPane {
     this.game.setGameUI(this);
 
     this.goToSetup();
+    this.setFitToWidth(true);
+    this.setFitToHeight(true);
   }
 
   public void goToSetup() {
-    this.setContent(this.setup);
+    Platform.runLater(new Runnable() {
+      @Override
+      public void run() {
+        GameUI.this.setContent(GameUI.this.setup);
+      }
+    });
   }
 
   public void goToOptions() {
-    this.setContent(this.options);
+    Platform.runLater(new Runnable() {
+      @Override
+      public void run() {
+        GameUI.this.setContent(GameUI.this.options);
+      }
+    });
   }
 
   public void addPlayer(Player p) {
@@ -94,10 +107,20 @@ public class GameUI extends ScrollPane {
         GameUI.this.setContent(display);
       }
     });
-    this.game.start(questions, display);
-    // TODO setContent to some pane to display during the game
-
-    // TODO create a new game and setGame to other objects
-    this.goToSetup();
+    switch (this.game.start(questions, display, this)) {
+      case 1:
+        new Alert(Alert.AlertType.ERROR,
+            "Game Has started, how are you doing this?").showAndWait();
+        this.goToSetup();
+        break;
+      case 2:
+        new Alert(Alert.AlertType.ERROR, "Not enough players").showAndWait();
+        this.goToSetup();
+        break;
+      case 3:
+        new Alert(Alert.AlertType.ERROR, "Not enough Questions").showAndWait();
+        this.goToSetup();
+        break;
+    }
   }
 }

@@ -252,9 +252,9 @@ public class Round {
   public void vote() {
     for (Question question : this.questions) {
       this.display.changeState("Voting");
-      this.setVotes();
 
       this.question = question;
+      this.setVotes();
       this.display.setConent(this.question.getVotingPane());
       this.wait(Question.getVoteTime() * this.question.getAnswers().size(),
           () -> {
@@ -291,7 +291,8 @@ public class Round {
     for (Player p : this.players) {
       switch (this.nRoundType) {
         case (0):
-          p.setVotes(1);
+          if (!this.getQuestion().isAnswering(p))
+            p.setVotes(1);
           break;
         case (1):
           p.setVotes(3);

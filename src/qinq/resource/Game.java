@@ -45,6 +45,15 @@ public class Game extends GameObject {
    * The Game UI, needed for refreshing people, and other such tasks(probably).
    */
   private GameUI       gameui;
+  /**
+   * Minimum number of players needed to start a game
+   */
+  private static int   minPlayers = 3;
+  /**
+   *
+   * Maximum number of players allowed to join a game
+   */
+  private static int   maxPlayers = 10;
 
   /**
    * @param questions
@@ -73,8 +82,9 @@ public class Game extends GameObject {
       }
     }
     if (this.currentRound != null) // Too late to create a player, a game has
-                                   // already started
-      return -2;
+      return -2; // already started
+    if (this.players.size() >= Game.maxPlayers) // Max players already reached
+      return -3;
     Player p = new Player(strName, ip);
     this.players.add(p);
     if (this.gameui != null)
@@ -89,10 +99,13 @@ public class Game extends GameObject {
    *          a list of questions that will be used for the current game
    * @param display
    *          the pane on which to display result on
+   * @return false if game did not start
    */
-  public synchronized void start(List<String> questions, GamePane display) {
-    if (this.currentRound != null || this.players.size() < 3)
-      return;
+  public synchronized int start(List<String> questions, GamePane display, GameUI gameui) {
+    if (this.currentRound != null)
+      return 1;
+    if (this.players.size() < Game.minPlayers)
+      return 2;
 
     // Remove duplicate questions
     List<String> nonDupQuestions = questions.parallelStream()
@@ -103,7 +116,8 @@ public class Game extends GameObject {
                                                        // 2n+1 questions where n
                                                        // is the number of
                                                        // players
-      return;
+      return 3;
+
     new Thread() {
       @Override
       public void run() {
@@ -126,8 +140,13 @@ public class Game extends GameObject {
         Game.this.currentRound.saveResults();
 
         Game.this.currentRound = null; // End the game
+        Game.this.players = new ArrayList<Player>();
+
+        // Go back to game setup
+        gameui.goToSetup();
       }
     }.start();
+    return 0;
   }
 
   /**
@@ -224,5 +243,35 @@ public class Game extends GameObject {
    */
   public synchronized void setGameUI(GameUI gameui) {
     this.gameui = gameui;
+  }
+
+  /**
+   * @return the maxPlayers
+   */
+  public static int getMaxPlayers() {
+    return maxPlayers;
+  }
+
+  /**
+   * @param max
+   *          the maxPlayers to set
+   */
+  public static void setMaxPlayers(int max) {
+    maxPlayers = max;
+  }
+
+  /**
+   * @return the minPlayers
+   */
+  public static int getMinPlayers() {
+    return minPlayers;
+  }
+
+  /**
+   * @param min
+   *          the minPlayers to set
+   */
+  public static void setMinPlayers(int min) {
+    minPlayers = min;
   }
 }

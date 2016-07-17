@@ -1,16 +1,43 @@
 #root{
   -fx-padding: 8;
 }
-Label {
-  -fx-font-size: 20;
-}
-#header {
-  -fx-font-weight: 700;
-  -fx-pref-width: 100%;
-}
 #address-label {
   -fx-background-color: #BBB;
 }
+#categories {
+  -fx-vgap: 10;
+  -fx-hgap: 25;
+}
+#options {
+  -fx-spacing: 8;
+}
+
+Label {
+  -fx-font-size: 20;
+}
+
+.header {
+  -fx-font-weight: 700;
+  -fx-alignment: center;
+}
+.top, .bottom {
+  -fx-alignment: center;
+}
+.players {
+  -fx-padding: 10 10 10 10;
+  -fx-vgap: 10;
+  -fx-hgap: 10;
+}
+
+.players > .player-label {
+  -fx-font: 18px Serif;
+  -fx-padding: 0 14 0 14;
+  -fx-border-radius: 3;
+  -fx-border-width: 2px;
+  -fx-border-insets: -2;
+  -fx-border-style: solid;
+}
+
 .answer-node {
   -fx-background-color: #aaa;
   -fx-border-style: solid;

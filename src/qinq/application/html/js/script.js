@@ -157,14 +157,12 @@ function getInfo() {
         document.getElementById("answer-question").innerHTML = json['question'];
         document.getElementById('answer-field').dataset.id   = json['aid'];
         document.getElementById("question-box").style.display = 'block';
-        document.getElementById("question-box").style.display = 'none';
         document.getElementById("vote-box").style.display     = 'none';
         document.getElementById("welcome").style.display      = 'none';
         state = 'answering';
       }
       else if(json['action'] == 'vote') {
         document.getElementById("timer").style.display        = 'block';
-        document.getElementById("question-box").style.display = 'block';
         document.getElementById("question-box").style.display = 'none';
         document.getElementById("welcome").style.display      = 'none';
         document.getElementById("answers").innerHTML = '';

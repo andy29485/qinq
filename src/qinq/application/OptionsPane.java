@@ -84,11 +84,11 @@ public class OptionsPane extends BorderPane {
 
     Game.setMaxPlayers(10);
     Spinner<Integer> max_players = new Spinner<Integer>(5, 10, 10);
-    num_answers.valueProperty()
+    max_players.valueProperty()
         .addListener((obs, oldValue, newValue) -> Game.setMaxPlayers(newValue));
-    Game.setMinPlayers(10);
+    Game.setMinPlayers(3);
     Spinner<Integer> min_players = new Spinner<Integer>(3, 9, 3);
-    num_answers.valueProperty()
+    min_players.valueProperty()
         .addListener((obs, oldValue, newValue) -> Game.setMinPlayers(newValue));
 
     this.categories = new HashMap<CheckBox, Set<String>>();

@@ -24,18 +24,15 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
-import qinq.resource.Game;
 import qinq.resource.Player;
 
 public class SetupPane extends BorderPane {
   private Label    addressLabel;
   private FlowPane players;
-  private Game     game;        // May not even be needed
 
-  public SetupPane(GameUI root, GameServer server, Game game) {
+  public SetupPane(GameUI root, GameServer server) {
     this.addressLabel = new Label(server.getAddress());
     this.players = new FlowPane();
-    this.game = game;
 
     this.setId("setup-pane");
     this.players.getStyleClass().add("players");

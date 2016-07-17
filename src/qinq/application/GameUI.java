@@ -40,7 +40,7 @@ public class GameUI extends ScrollPane {
   public GameUI(GameServer server, Game game) {
     this.game = game;
     this.server = server;
-    this.setup = new SetupPane(this, server, game);
+    this.setup = new SetupPane(this, server);
     this.options = new OptionsPane(this, game);
 
     this.game.setGameUI(this);

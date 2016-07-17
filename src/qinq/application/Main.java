@@ -33,6 +33,7 @@ public class Main extends Application {
       GameServer server = new GameServer();
       Game game = new Game();
       Parent root = new GameUI(server, game);
+      root.setId("root");
       server.setGame(game);
 
       primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {

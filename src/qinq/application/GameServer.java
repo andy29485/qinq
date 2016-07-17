@@ -203,6 +203,10 @@ public class GameServer {
         case "get state":
           id = Integer.valueOf(json.getString("id"));
           p = g.getPlayerById(id);
+          if (p == null) {
+            jsonOut.put("action", "die");
+            break;
+          }
           if (g.getRound() != null)
             time = g.getRound().getTime();
           else

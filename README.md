@@ -52,4 +52,4 @@ This project is distributed under the GPLv3 Licence.
 | Allow selection of categorised answers | complete |
 | Allow addition of custom categories | complete |
 | End timer if action was complete | complete |
-| Allow kicking of players | planned |
+| Allow kicking of players | complete |

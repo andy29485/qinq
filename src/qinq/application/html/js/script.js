@@ -128,6 +128,11 @@ function getInfo() {
       function(json) {
     console.log(JSON.stringify(json))
 
+    if(json['action'] == 'die') {
+      alert("You have been kicked(or you may have never even existed) :(");
+      location.reload();
+    }
+    
     timer = json['time'];
 
     if(timer <= 0) {

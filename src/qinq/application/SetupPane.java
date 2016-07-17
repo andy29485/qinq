@@ -19,20 +19,27 @@
 package qinq.application;
 
 import javafx.application.Platform;
+import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import qinq.resource.Game;
 import qinq.resource.Player;
 
 public class SetupPane extends BorderPane {
   private Label    addressLabel;
   private FlowPane players;
+  private Game     game;
 
-  public SetupPane(GameUI root, GameServer server) {
+  public SetupPane(GameUI root, GameServer server, Game game) {
     this.addressLabel = new Label(server.getAddress());
     this.players = new FlowPane();
+    this.game = game;
 
     this.setId("setup-pane");
     this.players.getStyleClass().add("players");
@@ -77,7 +84,19 @@ public class SetupPane extends BorderPane {
     Platform.runLater(new Runnable() {
       @Override
       public void run() {
-        SetupPane.this.players.getChildren().add(p.getLargeLabel());
+        Node player = p.getLargeLabel();
+        player.setOnMouseClicked(event -> {
+          Alert alert = new Alert(AlertType.CONFIRMATION);
+          alert.setTitle("Confirmation Dialog");
+          alert.setHeaderText("Player will be deleted");
+          alert.setContentText("Are you sure you wish to remove this player?");
+          if (alert.showAndWait().get() == ButtonType.OK) { // ... user chose OK
+            SetupPane.this.players.getChildren().remove(player);
+            SetupPane.this.game.getPlayers().remove(p);
+          }
+        });
+
+        SetupPane.this.players.getChildren().add(player);
       }
     });
   }

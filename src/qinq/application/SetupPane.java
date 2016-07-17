@@ -70,7 +70,6 @@ public class SetupPane extends BorderPane {
     bottom.getChildren().add(buttonStart);
     bottom.getChildren().add(buttonOpt);
     bottom.getChildren().add(buttonExit);
-    bottom.setAlignment(Pos.CENTER);
 
     this.setTop(top);
     this.setCenter(this.players);

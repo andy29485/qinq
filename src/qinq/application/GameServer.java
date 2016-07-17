@@ -223,14 +223,14 @@ public class GameServer {
               jsonOut.put("action", "vote");
               jsonOut.put("time", time);
               jsonOut.put("question", g.getRound().getQuestion().getQuestion());
-              if (GameServer.this.game.getRound().getQuestion().isAnswering(p))
-                p.setVotes(0);
               jsonOut.put("votes", p.getVotes());
               JSONArray jSONArray = new JSONArray();
               if (!GameServer.this.game.getRound().getQuestion().isAnswering(p))
                 for (Answer tmp : g.getRound().getQuestion().getAnswers()) {
-                  jSONArray.put(new JSONObject().put("answer", tmp.getAnswer())
-                      .put("aid", tmp.getID()));
+                  if (tmp.getPlayer() != p)
+                    jSONArray
+                        .put(new JSONObject().put("answer", tmp.getAnswer())
+                            .put("aid", tmp.getID()));
                 }
               jsonOut.put("answers", jSONArray);
             }

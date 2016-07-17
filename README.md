@@ -46,9 +46,10 @@ This project is distributed under the GPLv3 Licence.
 | ---- | :----: |
 | Come up with more questions | outsourcing |
 | Make web-end look better | considering |
-| Make application-end look better | in progress |
+| Make application-end look better | complete |
 | View results on web-end | planned |
 | Allow internet based connecting(non-local) | considering |
-| allow selection of categorised answers | complete |
-| allow addition of custom categories | complete |
-| end timer if action was complete | in progress |
+| Allow selection of categorised answers | complete |
+| Allow addition of custom categories | complete |
+| End timer if action was complete | complete |
+| Allow kicking of players | planned |

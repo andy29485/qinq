@@ -92,6 +92,7 @@ function createPlayer() {
 function submitAnswer() {
   document.getElementById("welcome").style.display      = 'none';
   document.getElementById("vote-box").style.display     = 'none';
+  document.getElementById("welcome").style.display      = 'none';
 
   var answer = document.getElementById('answer-field').value;
   var aid = document.getElementById('answer-field').dataset.id;
@@ -102,6 +103,7 @@ function submitAnswer() {
   sendData(data, function(x) {});
   document.getElementById("question-box").style.display = 'none';
   document.getElementById("timer").style.display        = 'none';
+  document.getElementById("welcome").style.display      = 'none';
 
   document.getElementById('answer-field').value         = '';
 
@@ -115,9 +117,7 @@ function submitVote(aid) {
       removeElementsByClass('vote-option');
     }
     else {
-      //TODO somehow incorporate json['voted'] into this
-      //         (number of times voted on that answer)
-
+      document.getElementById("vts-"+aid).innerHTML='&nbsp;('+json['voted']+')';
     }
   });
   state = 'waiting';
@@ -172,17 +172,24 @@ function getInfo() {
         var element = document.getElementById("answers");
         json['answers'].forEach(function(answer) {
           var div = document.createElement("div");
+          var span = document.createElement("span");
           var node = document.createTextNode(answer['answer']);
           div.dataset.id = answer['aid'];
+          span.id = 'vts-'+answer['aid'];
           div.className = 'vote-option';
           div.setAttribute("onclick", "submitVote(" + answer['aid'] + ")");
           div.appendChild(node);
+          div.appendChild(span);
           element.appendChild(div);
         });
         if(json['votes'] > 0){
           document.getElementById("vote-box").style.display = 'block';
           state = 'voting';
         }
+      }
+      else {
+        document.getElementById("question-box").style.display = 'none';
+        document.getElementById("vote-box").style.display     = 'none';
       }
     }
 

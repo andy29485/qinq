@@ -1,3 +1,6 @@
+#root{
+  -fx-padding: 8;
+}
 Label {
   -fx-font-size: 20;
 }
@@ -7,4 +10,47 @@ Label {
 }
 #address-label {
   -fx-background-color: #BBB;
+}
+.answer-node {
+  -fx-background-color: #aaa;
+  -fx-border-style: solid;
+  -fx-border-radius: 5;
+  -fx-padding: 5px;
+  -fx-border-width: 2px;
+  -fx-border-insets: -1;
+  -fx-max-width: 187;
+  -fx-max-height: 187;
+  -fx-min-width: 187;
+  -fx-min-height: 187;
+  -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.7), 8, 0, 0, 0);
+}
+.answer-pane {
+  -fx-padding: 12 0 0 0;
+  -fx-vgap: 10;
+  -fx-hgap: 10;
+  -fx-alignment: top-center;
+}
+.vote {
+  -fx-font: 18px Serif;
+  -fx-border-radius: 3;
+  -fx-border-style: solid;
+  -fx-border-width: 1px;
+  -fx-border-insets: -1;
+}
+.voters {
+  -fx-hgap: 6;
+  -fx-vgap: 4;
+  -fx-alignment: bottom-center;
+}
+.answer-node > .player-label {
+  -fx-font: 22px Serif;
+  -fx-min-width: 20;
+  -fx-padding: 0 9 0 9;
+  -fx-border-style: solid;
+  -fx-border-radius: 3;
+  -fx-border-insets: -1;
+  -fx-alignment: center;
+}
+.answer-node > Label {
+  -fx-font: 14px Serif;
 }

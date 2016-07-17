@@ -149,25 +149,33 @@ public class Answer extends GameObject {
         this.votes.put(p, 1);
       p.useVote();
     }
+    else
+      return 0;
     return this.votes.get(p);
   }
 
   public Node getAnonAnswer() {
     BorderPane container = new BorderPane();
+    container.getStyleClass().add("answer-node");
     container.setCenter(new Label(this.strAnswer));
     return container;
   }
 
   public Node getFinalAnswer() {
     BorderPane container = new BorderPane();
+    container.getStyleClass().add("answer-node");
     container.setCenter(new Label(this.strAnswer));
 
     container.setTop(p.getNameLabel());
 
     FlowPane voters = new FlowPane();
-    for (Player p : this.votes.keySet())
-      voters.getChildren()
-          .add(p.getNameLabel(String.valueOf(this.votes.get(p))));
+    voters.getStyleClass().add("voters");
+
+    for (Player p : this.votes.keySet()) {
+      Node vote = p.getNameLabel(String.valueOf(this.votes.get(p)));
+      vote.getStyleClass().add("vote");
+      voters.getChildren().add(vote);
+    }
 
     container.setBottom(voters);
 

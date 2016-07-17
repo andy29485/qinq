@@ -181,6 +181,7 @@ public class Question extends GameObject {
     FlowPane answers = new FlowPane();
     for (Answer answer : this.lAnswers)
       answers.getChildren().add(answer.getAnonAnswer());
+    answers.getStyleClass().add("answer-pane");
     voting.setCenter(answers);
 
     return voting;
@@ -197,6 +198,7 @@ public class Question extends GameObject {
     results.setTop(new Label(this.strValue));
 
     FlowPane answers = new FlowPane();
+    answers.getStyleClass().add("answer-pane");
     for (Answer answer : this.lAnswers)
       answers.getChildren().add(answer.getFinalAnswer());
     results.setCenter(answers);

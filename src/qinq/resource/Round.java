@@ -98,9 +98,10 @@ public class Round {
 
     switch (nRoundType) {
       case 0:// Normal
-        List<Player[]> question_groups = new ArrayList<Player[]>();
+        List<Player[]> question_groups;
         grouping:
         do {
+          question_groups = new ArrayList<Player[]>();
           tmpPlayers = new ArrayList<Player>();
           for (int i = 0; i < Question.getNumAnswers(); i++) { // add players
             tmpPlayers.addAll(players);// into a 'hat' that will be drawn from
@@ -110,11 +111,12 @@ public class Round {
             Player[] group = new Player[Question.getNumAnswers()];
             for (int j = 0; j < Question.getNumAnswers(); j++) {
               do {
+                random = ThreadLocalRandom.current().nextInt(tmpPlayers.size());
                 if (tmpPlayers.size() < Question.getNumAnswers()
-                    && tmpPlayers.size() > 1
+                    && (tmpPlayers.size() > 1 || Arrays.asList(group)
+                        .contains(tmpPlayers.get(random)))
                     && (new HashSet<Player>(tmpPlayers)).size() == 1)
                   continue grouping;
-                random = ThreadLocalRandom.current().nextInt(tmpPlayers.size());
               } while (Arrays.asList(group).contains(tmpPlayers.get(random)));
               group[j] = tmpPlayers.remove(random);
             }
@@ -131,7 +133,8 @@ public class Round {
       case 1:// Final
         random = ThreadLocalRandom.current().nextInt(questions.size());
         String strQ = questions.remove(random);
-        Question q = new Question(strQ, (Player[]) this.players.toArray());
+        Question q = new Question(strQ,
+            this.players.toArray(new Player[this.players.size()]));
         this.questions.add(q);
         break;
     }

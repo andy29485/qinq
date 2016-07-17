@@ -155,6 +155,7 @@ function getInfo() {
         state = 'answering';
       }
       else if(json['action'] == 'vote') {
+        document.getElementById("timer").style.display = 'block';
         document.getElementById("answers").innerHTML = '';
         document.getElementById("vote-question").innerHTML = json['question'];
         document.getElementById("votes-left-span").innerHTML = json['votes'];

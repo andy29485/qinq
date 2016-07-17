@@ -25,6 +25,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import qinq.resource.Game;
+import qinq.resource.Player;
 
 public class GamePane extends BorderPane {
   private Game     game;
@@ -39,7 +40,9 @@ public class GamePane extends BorderPane {
     this.labelTime = new Label("");
     this.header = new HBox();
 
+    this.players = new FlowPane();
     this.header.getChildren().addAll(this.labelState, this.labelTime);
+    this.setConent(players);
 
     this.setTop(header);
   }
@@ -54,6 +57,13 @@ public class GamePane extends BorderPane {
               String.format(" - %d", GamePane.this.game.getRound().getTime()));
         else
           GamePane.this.labelTime.setText("");
+        if (GamePane.this.labelState.getText().equalsIgnoreCase("Answering")) {
+          GamePane.this.players.getChildren().clear();
+          for (Player p : GamePane.this.game.getPlayers()) {
+            if (p.getAnswers().size() > 0)
+              GamePane.this.players.getChildren().add(p.getLargeLabel());
+          }
+        }
       }
     });
   }

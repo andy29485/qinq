@@ -220,17 +220,19 @@ public class GameServer {
             }
             else if (GameServer.this.game.getRound() != null
                 && GameServer.this.game.getRound().getQuestion() != null
-                && !GameServer.this.game.getRound().getQuestion().isAnswering(p)
                 && p.getVotes() > 0) {
               jsonOut.put("action", "vote");
               jsonOut.put("time", time);
               jsonOut.put("question", g.getRound().getQuestion().getQuestion());
+              if (GameServer.this.game.getRound().getQuestion().isAnswering(p))
+                p.setVotes(0);
               jsonOut.put("votes", p.getVotes());
               JSONArray jSONArray = new JSONArray();
-              for (Answer tmp : g.getRound().getQuestion().getAnswers()) {
-                jSONArray.put(new JSONObject().put("answer", tmp.getAnswer())
-                    .put("aid", tmp.getID()));
-              }
+              if (!GameServer.this.game.getRound().getQuestion().isAnswering(p))
+                for (Answer tmp : g.getRound().getQuestion().getAnswers()) {
+                  jSONArray.put(new JSONObject().put("answer", tmp.getAnswer())
+                      .put("aid", tmp.getID()));
+                }
               jsonOut.put("answers", jSONArray);
             }
             else {

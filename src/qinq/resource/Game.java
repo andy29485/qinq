@@ -101,7 +101,8 @@ public class Game extends GameObject {
    *          the pane on which to display result on
    * @return false if game did not start
    */
-  public synchronized int start(List<String> questions, GamePane display, GameUI gameui) {
+  public synchronized int start(List<String> questions, GamePane display,
+      GameUI gameui) {
     if (this.currentRound != null)
       return 1;
     if (this.players.size() < Game.minPlayers)

@@ -163,6 +163,7 @@ function getInfo() {
       }
       else if(json['action'] == 'vote') {
         document.getElementById("timer").style.display        = 'block';
+        document.getElementById("vote-box").style.display     = 'block';
         document.getElementById("question-box").style.display = 'none';
         document.getElementById("welcome").style.display      = 'none';
         document.getElementById("answers").innerHTML = '';
@@ -186,7 +187,6 @@ function getInfo() {
           element.appendChild(div);
         });
         if(json['votes'] > 0){
-          document.getElementById("vote-box").style.display = 'block';
           state = 'voting';
         }
       }

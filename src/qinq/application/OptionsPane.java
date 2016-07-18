@@ -37,6 +37,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
@@ -77,19 +78,31 @@ public class OptionsPane extends BorderPane {
     bottom.getChildren().add(buttonExit);
     bottom.setAlignment(Pos.CENTER);
 
+    Spinner<Integer> num_answers = new Spinner<Integer>(2, 9, 2);
+    Spinner<Integer> max_players =
+        new Spinner<Integer>(3, Integer.MAX_VALUE, 10);
+    Spinner<Integer> min_players = new Spinner<Integer>(3, 10, 3);
+
     Question.setNumAnswers(2);
-    Spinner<Integer> num_answers = new Spinner<Integer>(2, 6, 2);
     num_answers.valueProperty().addListener(
         (obs, oldValue, newValue) -> Question.setNumAnswers(newValue));
 
     Game.setMaxPlayers(10);
-    Spinner<Integer> max_players = new Spinner<Integer>(5, 10, 10);
-    max_players.valueProperty()
-        .addListener((obs, oldValue, newValue) -> Game.setMaxPlayers(newValue));
+    max_players.valueProperty().addListener((obs, oldValue, newValue) -> {
+      Game.setMaxPlayers(newValue);
+      ((IntegerSpinnerValueFactory) num_answers.getValueFactory())
+          .setMax(newValue - 1);
+      ((IntegerSpinnerValueFactory) min_players.getValueFactory())
+          .setMax(newValue);
+    });
     Game.setMinPlayers(3);
-    Spinner<Integer> min_players = new Spinner<Integer>(3, 9, 3);
-    min_players.valueProperty()
-        .addListener((obs, oldValue, newValue) -> Game.setMinPlayers(newValue));
+    min_players.valueProperty().addListener((obs, oldValue, newValue) -> {
+      Game.setMinPlayers(newValue);
+      ((IntegerSpinnerValueFactory) num_answers.getValueFactory())
+          .setMin(newValue - 1);
+      ((IntegerSpinnerValueFactory) max_players.getValueFactory())
+          .setMin(newValue);
+    });
 
     this.categories = new HashMap<CheckBox, Set<String>>();
     this.questions = new TextArea();

@@ -140,6 +140,7 @@ function getInfo() {
     }
 
     document.getElementById("timer").innerHTML = timer;
+    document.getElementById("timer").innerHTML = json['score'];
 
     if(state == 'answering' || state =='voting') {
       if(timer <= 0) {

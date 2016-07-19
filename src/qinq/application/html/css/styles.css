@@ -68,8 +68,9 @@ button {
 #timer {
   float: right;
 }
-#name {
+#name, #score {
   float: left;
+  margin-bottom: 8px;
 }
 #name-error {
   color: #F00;

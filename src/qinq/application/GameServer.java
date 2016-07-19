@@ -207,6 +207,9 @@ public class GameServer {
             jsonOut.put("action", "die");
             break;
           }
+
+          jsonOut.put("score", p.getPoints());
+
           if (g.getRound() != null)
             time = g.getRound().getTime();
           else

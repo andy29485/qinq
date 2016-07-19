@@ -50,6 +50,10 @@ public class Player extends GameObject {
    */
   private int                      nVotes;
   /**
+   * Number of points a player has.
+   */
+  private int                      nPoints;
+  /**
    * Colour of the player.
    */
   private String                   color;
@@ -90,6 +94,7 @@ public class Player extends GameObject {
     this.answers = new ArrayList<Answer>();
     this.strName = strName;
     this.strIp = ip;
+    this.nPoints = 0;
     this.setVotes(0);
     this.color = Player.COLOURS.get(this.getID() % Player.COLOURS.size());
   }
@@ -210,5 +215,24 @@ public class Player extends GameObject {
     label.setStyle(String.format("-fx-background-color: %s;", this.getColor()));
     label.getStyleClass().add("player-label");
     return label;
+  }
+
+  /**
+   * Get the player's score
+   * 
+   * @return the the player's score
+   */
+  public int getPoints() {
+    return nPoints;
+  }
+
+  /**
+   * Add to the player's score
+   * 
+   * @param nPoints
+   *          the amount of points to add to the player's score
+   */
+  public void addPoints(int nPoints) {
+    this.nPoints += nPoints;
   }
 }

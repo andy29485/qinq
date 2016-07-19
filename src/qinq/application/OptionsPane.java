@@ -115,6 +115,7 @@ public class OptionsPane extends BorderPane {
     CheckBox logs_cb = new CheckBox("Save Logs");
     TextField logs_tb = new TextField(Game.getLogsDir());
 
+    logs_cb.setSelected(true);
     logs_cb.setOnAction((event) -> {
       Game.setStoreLogs(logs_cb.isSelected());
     });

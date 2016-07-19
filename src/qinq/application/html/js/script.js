@@ -66,7 +66,21 @@ function onLoad() {
 }
 
 function spectate() {
-  //TODO
+  var name = '';
+  sendData({'action':'create user', 'name':name.trim()}, function(json) {
+    if(json['created'] == 'true') {
+      player_id   = json['id'];
+      player_name = json['name'];
+      document.getElementById('name').innerHTML        = player_name;
+      document.getElementById("welcome").style.display = 'none';
+      document.getElementById("header").style.backgroundColor=json['color'];
+      getInfo();
+    }
+    else {
+      document.getElementById("welcome").style.display    = 'block';
+    }
+
+  });
 }
 
 function createPlayer() {

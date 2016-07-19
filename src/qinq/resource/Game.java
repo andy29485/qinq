@@ -50,6 +50,10 @@ public class Game extends GameObject {
    */
   private List<Player>   players;
   /**
+   * List of people spectating the game.
+   */
+  private List<Player>   spectators;
+  /**
    * The current round that is being played.
    */
   private Round          currentRound;
@@ -78,11 +82,11 @@ public class Game extends GameObject {
   private static String  strLogDir  = "logs/";
 
   /**
-   * @param questions
-   *          that can be used to play the game
+   * Create a game
    */
   public Game() {
     this.players = new ArrayList<Player>();
+    this.spectators = new ArrayList<Player>();
   }
 
   /**
@@ -92,26 +96,33 @@ public class Game extends GameObject {
    *          name for the player
    * @param ip
    *          used to connect/reconnect
-   * @return whether the player has be created successfully
+   * @return the player object
    */
-  public synchronized int addPlayer(String strName, String ip) {
-    for (Player player : this.players) {
-      if (player.getName().equalsIgnoreCase(strName)) {
-        if (player.getIp().equalsIgnoreCase(ip))
-          return player.getID();
-        else
-          return -1;
+  public synchronized Player addPlayer(String strName, String ip) {
+    if (!strName.isEmpty()) {
+      for (Player player : this.players) {
+        if (player.getName().equalsIgnoreCase(strName)) {
+          if (player.getIp().equalsIgnoreCase(ip))
+            return player;
+          else
+            return null;
+        }
       }
+      if (this.currentRound != null) // Too late to create a player, a game has
+        return null; // already started
+      if (this.players.size() >= Game.maxPlayers) // Max players already reached
+        return null;
     }
-    if (this.currentRound != null) // Too late to create a player, a game has
-      return -2; // already started
-    if (this.players.size() >= Game.maxPlayers) // Max players already reached
-      return -3;
     Player p = new Player(strName, ip);
-    this.players.add(p);
-    if (this.gameui != null)
-      this.gameui.addPlayer(p);
-    return p.getID();
+    if (p.getID() >= 0) {
+      this.players.add(p);
+      if (this.gameui != null)
+        this.gameui.addPlayer(p);
+    }
+    else
+      this.spectators.add(p);
+
+    return p;
   }
 
   /**
@@ -194,7 +205,7 @@ public class Game extends GameObject {
           }
 
           Game.this.currentRound = new Round(0, "Round 1", Game.this.players,
-              nonDupQuestions, display);
+              Game.this.spectators, nonDupQuestions, display);
           Game.this.currentRound.answer();
           Game.this.currentRound.vote();
           Game.this.sortPlayers();
@@ -202,15 +213,16 @@ public class Game extends GameObject {
           Game.this.currentRound.saveResults(writer);
 
           Game.this.currentRound = new Round(0, "Round 2", Game.this.players,
-              nonDupQuestions, display);
+              Game.this.spectators, nonDupQuestions, display);
           Game.this.currentRound.answer();
           Game.this.currentRound.vote();
           Game.this.sortPlayers();
           Game.this.currentRound.displayResults();
           Game.this.currentRound.saveResults(writer);
 
-          Game.this.currentRound = new Round(1, "Final Round",
-              Game.this.players, nonDupQuestions, display);
+          Game.this.currentRound =
+              new Round(1, "Final Round", Game.this.players,
+                  Game.this.spectators, nonDupQuestions, display);
           Game.this.currentRound.answer();
           Game.this.currentRound.vote();
           Game.this.sortPlayers();
@@ -278,6 +290,12 @@ public class Game extends GameObject {
     if (this.players == null)
       return null;
     for (Player p : this.players) {
+      if (p.getID() == id)
+        return p;
+    }
+    if (this.spectators == null)
+      return null;
+    for (Player p : this.spectators) {
       if (p.getID() == id)
         return p;
     }

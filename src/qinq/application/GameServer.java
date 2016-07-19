@@ -174,17 +174,17 @@ public class GameServer {
 
       switch (json.getString("action").toLowerCase()) {
         case "create user":
-          id = g.addPlayer(json.getString("name").toUpperCase(),
+          p = g.addPlayer(json.getString("name").toUpperCase(),
               request.getRemoteAddr());
-          if (id != -1) {
+          if (p != null) {
             jsonOut.put("created", "true");
-            jsonOut.put("color", g.getPlayerById(id).getColor());
+            jsonOut.put("color", p.getColor());
+            jsonOut.put("name", p.getName().toUpperCase());
+            jsonOut.put("id", p.getID());
           }
           else {
             jsonOut.put("created", "false");
           }
-          jsonOut.put("name", json.getString("name").toUpperCase());
-          jsonOut.put("id", id);
           break;
         case "send answer":
           id = Integer.valueOf(json.getString("id"));

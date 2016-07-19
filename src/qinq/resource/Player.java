@@ -90,13 +90,16 @@ public class Player extends GameObject {
    *          player's ip address
    */
   public Player(String strName, String ip) {
-    super(Player.nPlayers++);
+    super(strName.isEmpty() ? -Player.nPlayers++ : Player.nPlayers++);
     this.answers = new ArrayList<Answer>();
-    this.strName = strName;
+    this.strName = strName.isEmpty() ? "Spectator" : strName;
     this.strIp = ip;
     this.nPoints = 0;
     this.setVotes(0);
-    this.color = Player.COLOURS.get(this.getID() % Player.COLOURS.size());
+    if (strName.isEmpty())
+      this.color = "#555555";
+    else
+      this.color = Player.COLOURS.get(this.getID() % Player.COLOURS.size());
   }
 
   /**
@@ -219,7 +222,7 @@ public class Player extends GameObject {
 
   /**
    * Get the player's score
-   * 
+   *
    * @return the the player's score
    */
   public int getPoints() {
@@ -228,7 +231,7 @@ public class Player extends GameObject {
 
   /**
    * Add to the player's score
-   * 
+   *
    * @param nPoints
    *          the amount of points to add to the player's score
    */

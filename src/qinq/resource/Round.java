@@ -65,6 +65,10 @@ public class Round {
    */
   private List<Player>   players;
   /**
+   * List of player spectating this round
+   */
+  private List<Player>   spectators;
+  /**
    * The type of round that this is
    */
   private int            nRoundType;
@@ -95,7 +99,7 @@ public class Round {
    *          the GamePane on which stuff will be displayed on for the GM
    */
   public Round(int nRoundType, String strRoundName, List<Player> players,
-      List<String> questions, GamePane display) {
+      List<Player> spectators, List<String> questions, GamePane display) {
     List<Player> tmpPlayers; // for question distribution
     this.display = display; // the display on the main window
     int random;
@@ -103,6 +107,7 @@ public class Round {
     this.strRoundName = strRoundName;
     this.questions = new ArrayList<Question>(); // list of questions to be used
     this.players = players; // list of players
+    this.spectators = spectators; // list of spectators
     this.nRoundType = nRoundType;
 
     switch (nRoundType) {
@@ -388,6 +393,9 @@ public class Round {
           p.setVotes(3);
           break;
       }
+    }
+    for (Player p : this.spectators) {
+      p.setVotes(1);
     }
   }
 

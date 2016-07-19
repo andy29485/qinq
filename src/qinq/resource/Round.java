@@ -27,6 +27,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import javafx.scene.layout.FlowPane;
 import qinq.application.GamePane;
 
 /**
@@ -273,11 +274,22 @@ public class Round {
 
   /**
    * Display the result for the current question and move on after three seconds
+   *
+   * If current questions is null, display the rsults for this round
    */
   public void displayResults() {
     this.display.changeState("Results");
-    this.display.setConent(this.question.getResultsPane());
-    this.wait(12, null);
+    if (this.question != null) {
+      this.display.setConent(this.question.getResultsPane());
+      this.wait(12, null);
+    }
+    else {
+      FlowPane scores = new FlowPane();
+      for (Player p : this.players) {
+        scores.getChildren().add(p.getNameLabel(String.valueOf(p.getPoints())));
+      }
+      this.display.setConent(scores);
+    }
   }
 
   /**

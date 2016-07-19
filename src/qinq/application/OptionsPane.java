@@ -39,6 +39,7 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
@@ -111,6 +112,17 @@ public class OptionsPane extends BorderPane {
     this.options.setId("options");
     this.refresh();
 
+    CheckBox logs_cb = new CheckBox("Save Logs");
+    TextField logs_tb = new TextField(Game.getLogsDir());
+
+    logs_cb.setOnAction((event) -> {
+      Game.setStoreLogs(logs_cb.isSelected());
+    });
+
+    logs_tb.textProperty().addListener((observable, oldValue, newValue) -> {
+      Game.setLogsDir(newValue);
+    });
+
     this.questions.setTooltip(new Tooltip("One Question per Line"));
     this.categoryPane.setId("categories:");
 
@@ -123,7 +135,8 @@ public class OptionsPane extends BorderPane {
     this.options.getChildren().addAll(new Separator(Orientation.HORIZONTAL),
         new HBox(10, new Label("Number of Answers per question:"), num_answers),
         new HBox(20, new Label("Min Players:"), min_players),
-        new HBox(20, new Label("Max Players:"), max_players));
+        new HBox(20, new Label("Max Players:"), max_players),
+        new HBox(20, logs_cb, logs_tb));
 
     this.setTop(header);
     this.setCenter(this.options);

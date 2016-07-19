@@ -128,7 +128,7 @@ function getInfo() {
     console.log(JSON.stringify(json))
 
     if(json['action'] == 'die') {
-      alert("You have been kicked(or you may have never even existed) :(");
+      setTimeout(alert("Game ended, or maybe you got kicked"), 0);
       location.reload();
     }
     
@@ -140,6 +140,9 @@ function getInfo() {
       document.getElementById("vote-box").style.display     = 'none';
       document.getElementById("welcome").style.display      = 'none';
       state = 'waiting';
+    }
+    else {
+      document.getElementById("timer").style.display        = 'block';
     }
 
     document.getElementById("timer").innerHTML = timer;

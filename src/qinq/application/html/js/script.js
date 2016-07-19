@@ -106,7 +106,6 @@ function submitAnswer() {
   document.getElementById("welcome").style.display      = 'none';
 
   document.getElementById('answer-field').value         = '';
-
   state = 'waiting';
 }
 
@@ -115,12 +114,12 @@ function submitVote(aid) {
             'aid':aid.toString()}, function(json) {
     if(json['left'] == 0 || json['left'] == '0') {
       removeElementsByClass('vote-option');
+      state = 'waiting';
     }
     else {
       document.getElementById("vts-"+aid).innerHTML='&nbsp;('+json['voted']+')';
     }
   });
-  state = 'waiting';
 }
 
 function getInfo() {
@@ -136,7 +135,11 @@ function getInfo() {
     timer = json['time'];
 
     if(timer <= 0) {
-      document.getElementById("timer").style.display = 'none';
+      document.getElementById("timer").style.display        = 'none';
+      document.getElementById("question-box").style.display = 'none';
+      document.getElementById("vote-box").style.display     = 'none';
+      document.getElementById("welcome").style.display      = 'none';
+      state = 'waiting';
     }
 
     document.getElementById("timer").innerHTML = timer;

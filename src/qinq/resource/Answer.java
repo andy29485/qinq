@@ -64,6 +64,7 @@ public class Answer extends GameObject {
    */
   public Answer(Player p, Question q) {
     super(Answer.nAnswers++);
+    this.strAnswer = "";
     this.p = p;
     this.q = q;
     this.votes = new HashMap<Player, Integer>();

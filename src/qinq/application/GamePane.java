@@ -45,7 +45,7 @@ public class GamePane extends BorderPane {
     this.players.getStyleClass().add("players");
 
     this.header.getChildren().addAll(this.labelState, this.labelTime);
-    this.setConent(players);
+    this.setContent(players);
 
     this.setTop(header);
   }
@@ -77,11 +77,13 @@ public class GamePane extends BorderPane {
       @Override
       public void run() {
         GamePane.this.labelState.setText(state);
+        if (state.equalsIgnoreCase("Answering"))
+          GamePane.this.setContent(GamePane.this.players);
       }
     });
   }
 
-  public void setConent(Node node) {
+  public void setContent(Node node) {
     Platform.runLater(new Runnable() {
       @Override
       public void run() {

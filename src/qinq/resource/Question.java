@@ -199,8 +199,22 @@ public class Question extends GameObject {
 
     FlowPane answers = new FlowPane();
     answers.getStyleClass().add("answer-pane");
+    int nTotalPoints = 0;
     for (Answer answer : this.lAnswers)
-      answers.getChildren().add(answer.getFinalAnswer());
+      nTotalPoints += answer.getNumVotes();
+
+    for (Answer answer : this.lAnswers) {
+      answer.getPlayer().addPoints(answer.getNumVotes());
+      String strDisplay = String.valueOf(answer.getNumVotes());
+
+      if (answer.getNumVotes() == nTotalPoints) {
+        answer.getPlayer().addPoints(answer.getNumVotes());
+        strDisplay += " (x2)";
+      }
+
+      answers.getChildren().add(answer.getFinalAnswer(strDisplay));
+    }
+
     results.setCenter(answers);
 
     return results;

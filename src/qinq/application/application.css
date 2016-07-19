@@ -69,7 +69,7 @@ Label {
   -fx-vgap: 4;
   -fx-alignment: bottom-center;
 }
-.answer-node > .player-label {
+.answer-node .player-label {
   -fx-font: 22px Serif;
   -fx-min-width: 20;
   -fx-padding: 0 9 0 9;

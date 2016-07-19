@@ -25,6 +25,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
@@ -43,6 +44,9 @@ public class SetupPane extends BorderPane {
 
     this.setId("setup-pane");
     this.players.getStyleClass().add("players");
+
+    this.addressLabel.setTooltip(new Tooltip(
+        "Make sure to include the port\n (The part after the colon)"));
 
     HBox top = new HBox(5);
     HBox bottom = new HBox(20);

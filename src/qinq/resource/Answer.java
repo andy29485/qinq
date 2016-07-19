@@ -23,6 +23,7 @@ import java.util.Map;
 
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 
@@ -161,12 +162,25 @@ public class Answer extends GameObject {
     return container;
   }
 
-  public Node getFinalAnswer() {
+  public Node getFinalAnswer(String strScore) {
     BorderPane container = new BorderPane();
     container.getStyleClass().add("answer-node");
     container.setCenter(new Label(this.strAnswer));
 
-    container.setTop(p.getNameLabel());
+    AnchorPane top = new AnchorPane();
+
+    Label score = new Label(strScore);
+    score.getStyleClass().add("score");
+    Node name = p.getNameLabel();
+
+    AnchorPane.setTopAnchor(score, 0.0);
+    AnchorPane.setTopAnchor(name, 0.0);
+    AnchorPane.setLeftAnchor(name, 0.0);
+    AnchorPane.setRightAnchor(score, 0.0);
+
+    top.getChildren().addAll(name, score);
+
+    container.setTop(top);
 
     FlowPane voters = new FlowPane();
     voters.getStyleClass().add("voters");

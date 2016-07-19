@@ -196,6 +196,7 @@ public class Game extends GameObject {
               nonDupQuestions, display);
           Game.this.currentRound.answer();
           Game.this.currentRound.vote();
+          Game.this.sortPlayers();
           Game.this.currentRound.displayResults();
           Game.this.currentRound.saveResults(writer);
 
@@ -203,6 +204,7 @@ public class Game extends GameObject {
               nonDupQuestions, display);
           Game.this.currentRound.answer();
           Game.this.currentRound.vote();
+          Game.this.sortPlayers();
           Game.this.currentRound.displayResults();
           Game.this.currentRound.saveResults(writer);
 
@@ -210,6 +212,7 @@ public class Game extends GameObject {
               Game.this.players, nonDupQuestions, display);
           Game.this.currentRound.answer();
           Game.this.currentRound.vote();
+          Game.this.sortPlayers();
           Game.this.currentRound.displayResults();
           Game.this.currentRound.saveResults(writer);
 

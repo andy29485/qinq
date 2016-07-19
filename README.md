@@ -44,11 +44,15 @@ This project is distributed under the GPLv3 Licence.
 ## TODO
 | Item | Status |
 | ---- | :----: |
-| Come up with more questions | outsourcing |
-| Make web-end look better | considering |
-| Make application-end look better | complete |
+| Scores | complete |
 | View results on web-end | planned |
+| Round/Game results | planned |
+| Come up with more questions | outsourcing |
+| Player images - not just colours | considering |
+| Make web-end look **even** better | considering |
 | Allow internet based connecting(non-local) | considering |
+| Make web-end look better | complete |
+| Make web-end look **even** better | considering |
 | Allow selection of categorised answers | complete |
 | Allow addition of custom categories | complete |
 | End timer if action was complete | complete |

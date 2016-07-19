@@ -331,8 +331,10 @@ public class Game extends GameObject {
    * Sort the players of the game in order by point values
    */
   public synchronized void sortPlayers() {
-    this.players.stream()
-        .sorted((p1, p2) -> Integer.compare(p1.getPoints(), p2.getPoints()));
+    this.players = this.players.stream()
+        .sorted((p1, p2) -> Integer.compare(p1.getPoints(), p2.getPoints()))
+        .collect(Collectors.toList());
+    ;
   }
 
   /**

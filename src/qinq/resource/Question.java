@@ -155,6 +155,22 @@ public class Question extends GameObject {
   }
 
   /**
+   * Check if this is a question on which there is a point in voting
+   *
+   * @return true if more that 1 question was answered
+   */
+  public boolean canVote() {
+    int nAnswered = 0;
+    for (Answer a : this.lAnswers) {
+      if (!a.getAnswer().isEmpty())
+        nAnswered++;
+      if (nAnswered > 1)
+        return true;
+    }
+    return false;
+  }
+
+  /**
    * Check if a player is answering this question
    *
    * @param p
@@ -192,7 +208,7 @@ public class Question extends GameObject {
    *
    * @return a pane with the results for this question
    */
-  public Node getResultsPane() {
+  public Node getResultsPane(int nPlayers) {
     // TODO animation?
     BorderPane results = new BorderPane();
     results.setTop(new Label(this.strValue));
@@ -204,12 +220,19 @@ public class Question extends GameObject {
       nTotalPoints += answer.getNumVotes();
 
     for (Answer answer : this.lAnswers) {
-      answer.getPlayer().addPoints(answer.getNumVotes());
-      String strDisplay = String.valueOf(answer.getNumVotes());
+      String strDisplay = "0";
+      if (this.canVote()) {
+        answer.getPlayer().addPoints(answer.getNumVotes() * 100);
+        strDisplay = String.valueOf(answer.getNumVotes() * 100);
 
-      if (answer.getNumVotes() == nTotalPoints) {
-        answer.getPlayer().addPoints(answer.getNumVotes());
-        strDisplay += " (x2)";
+        if (answer.getNumVotes() == nTotalPoints) {
+          answer.getPlayer().addPoints(answer.getNumVotes() * 100);
+          strDisplay += " (x2)";
+        }
+      }
+      else if (!answer.getAnswer().isEmpty()) {
+        strDisplay = String.valueOf((nPlayers - this.lAnswers.size()) * 100);
+        answer.getPlayer().addPoints((nPlayers - this.lAnswers.size()) * 100);
       }
 
       answers.getChildren().add(answer.getFinalAnswer(strDisplay));

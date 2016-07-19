@@ -26,6 +26,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.paint.Color;
 
 /**
  * Answer
@@ -158,14 +159,23 @@ public class Answer extends GameObject {
   public Node getAnonAnswer() {
     BorderPane container = new BorderPane();
     container.getStyleClass().add("answer-node");
-    container.setCenter(new Label(this.strAnswer));
+    container.setCenter(new Label(
+        this.strAnswer.isEmpty() ? "(Did not Answer)" : this.strAnswer));
     return container;
   }
 
   public Node getFinalAnswer(String strScore) {
     BorderPane container = new BorderPane();
     container.getStyleClass().add("answer-node");
-    container.setCenter(new Label(this.strAnswer));
+    Label answer;
+    if (this.strAnswer.isEmpty()) {
+      answer = new Label("(Did not Answer)");
+      answer.setTextFill(Color.CRIMSON);
+    }
+    else {
+      answer = new Label(this.strAnswer);
+    }
+    container.setCenter(answer);
 
     AnchorPane top = new AnchorPane();
 

@@ -24,6 +24,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
 import qinq.application.GamePane;
 
 /**
@@ -279,9 +282,75 @@ public class Round {
 
   /**
    * Save the result of the current question to a file.
+   *
+   * @param writer
+   *          xml writer to output results to
    */
-  public void saveResults() {
-    // TODO save question results
+  public void saveResults(XMLStreamWriter writer) {
+    if (writer == null)
+      return;
+    try {
+      writer.writeCharacters("\n    ");
+      writer.writeStartElement("round");
+      writer.writeAttribute("name", this.getRoundName());
+      writer.writeCharacters("\n      ");
+      writer.writeStartElement("scores");
+      for (Player p : this.players) {
+        writer.writeCharacters("\n        ");
+        writer.writeStartElement("player");
+        writer.writeAttribute("player-id", String.valueOf(p.getID()));
+        writer.writeCharacters(String.valueOf(p.getPoints()));
+        writer.writeEndElement();
+      }
+      writer.writeCharacters("\n      ");
+      writer.writeEndElement();
+      writer.writeStartElement("questions");
+      for (Question q : this.questions) {
+        writer.writeCharacters("\n        ");
+        writer.writeStartElement("question");
+        writer.writeCharacters("\n          ");
+        writer.writeStartElement("value");
+        writer.writeCharacters(q.getQuestion());
+        writer.writeEndElement();
+
+        writer.writeCharacters("\n          ");
+        writer.writeStartElement("answers");
+        for (Answer a : q.getAnswers()) {
+          writer.writeCharacters("\n            ");
+          writer.writeStartElement("answer");
+          writer.writeAttribute("player-id",
+              String.valueOf(a.getPlayer().getID()));
+          writer.writeCharacters("\n              ");
+          writer.writeStartElement("value");
+          writer.writeCharacters(a.getAnswer());
+          writer.writeEndElement();
+          writer.writeCharacters("\n              ");
+          writer.writeStartElement("votes");
+          for (Player v : a.getVotes().keySet()) {
+            writer.writeCharacters("\n                ");
+            writer.writeStartElement("vote");
+            writer.writeAttribute("player-id", String.valueOf(v.getID()));
+            writer.writeCharacters(String.valueOf(a.getVotes().get(v)));
+            writer.writeEndElement();
+          }
+          writer.writeCharacters("\n              ");
+          writer.writeEndElement();
+          writer.writeCharacters("\n            ");
+          writer.writeEndElement();
+        }
+        writer.writeCharacters("\n          ");
+        writer.writeEndElement();
+
+        writer.writeCharacters("\n        ");
+        writer.writeEndElement();
+      }
+      writer.writeCharacters("\n      ");
+      writer.writeEndElement();
+    }
+    catch (XMLStreamException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
   /**

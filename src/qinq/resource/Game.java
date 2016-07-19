@@ -18,9 +18,21 @@
 
 package qinq.resource;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
+
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 import qinq.application.GamePane;
 import qinq.application.GameUI;
@@ -36,24 +48,34 @@ public class Game extends GameObject {
   /**
    * List of players participating in the game.
    */
-  private List<Player> players;
+  private List<Player>   players;
   /**
    * The current round that is being played.
    */
-  private Round        currentRound;
+  private Round          currentRound;
   /**
    * The Game UI, needed for refreshing people, and other such tasks(probably).
    */
-  private GameUI       gameui;
+  private GameUI         gameui;
   /**
    * Minimum number of players needed to start a game
    */
-  private static int   minPlayers = 3;
+  private static int     minPlayers = 3;
   /**
    *
    * Maximum number of players allowed to join a game
    */
-  private static int   maxPlayers = 10;
+  private static int     maxPlayers = 10;
+  /**
+   *
+   * Whether or not to store logs
+   */
+  private static boolean storeLogs  = true;
+  /**
+   *
+   * Directory in which to store logs
+   */
+  private static String  strLogDir  = "logs/";
 
   /**
    * @param questions
@@ -93,6 +115,19 @@ public class Game extends GameObject {
   }
 
   /**
+   * Get the current timestamp
+   *
+   * @return the current timestamp
+   */
+  public static String getISO8601StringForCurrentDate() {
+    Date now = new Date();
+    DateFormat dateFormat =
+        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
+    dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+    return dateFormat.format(now);
+  }
+
+  /**
    * Start the game
    *
    * @param questions
@@ -122,26 +157,78 @@ public class Game extends GameObject {
     new Thread() {
       @Override
       public void run() {
-        Game.this.currentRound = new Round(0, "Round 1", Game.this.players,
-            nonDupQuestions, display);
-        Game.this.currentRound.answer();
-        Game.this.currentRound.vote();
-        Game.this.currentRound.saveResults();
 
-        Game.this.currentRound = new Round(0, "Round 2", Game.this.players,
-            nonDupQuestions, display);
-        Game.this.currentRound.answer();
-        Game.this.currentRound.vote();
-        Game.this.currentRound.saveResults();
+        XMLOutputFactory factory = XMLOutputFactory.newInstance();
+        XMLStreamWriter writer;
+        try {
+          File logs = new File(Game.getLogsDir());
+          String time = getISO8601StringForCurrentDate();
+          File log = new File(logs, time + ".log");
+          if (Game.storeLogs && logs.exists() && logs.isDirectory()
+              && log.canWrite())
+            writer = factory.createXMLStreamWriter(new FileWriter(log));
+          else
+            writer = null;
+          if (writer != null) {
+            writer.writeStartDocument();
+            writer.writeCharacters("\n");
+            writer.writeStartElement("game");
+            writer.writeCharacters("\n  ");
+            writer.writeStartElement("time");
+            writer.writeCharacters(time);
+            writer.writeEndElement();
+            writer.writeCharacters("\n  ");
+            writer.writeStartElement("players");
+            for (Player p : Game.this.players) {
+              writer.writeCharacters("\n    ");
+              writer.writeStartElement("player");
+              writer.writeAttribute("id", String.valueOf(p.getID()));
+              writer.writeCharacters(p.getName());
+              writer.writeEndElement();
+            }
+            writer.writeCharacters("\n  ");
+            writer.writeEndElement();
+            writer.writeCharacters("\n  ");
+            writer.writeStartElement("rounds");
+          }
 
-        Game.this.currentRound = new Round(1, "Final Round", Game.this.players,
-            nonDupQuestions, display);
-        Game.this.currentRound.answer();
-        Game.this.currentRound.vote();
-        Game.this.currentRound.saveResults();
+          Game.this.currentRound = new Round(0, "Round 1", Game.this.players,
+              nonDupQuestions, display);
+          Game.this.currentRound.answer();
+          Game.this.currentRound.vote();
+          Game.this.currentRound.displayResults();
+          Game.this.currentRound.saveResults(writer);
 
-        Game.this.currentRound = null; // End the game
-        Game.this.players = new ArrayList<Player>();
+          Game.this.currentRound = new Round(0, "Round 2", Game.this.players,
+              nonDupQuestions, display);
+          Game.this.currentRound.answer();
+          Game.this.currentRound.vote();
+          Game.this.currentRound.displayResults();
+          Game.this.currentRound.saveResults(writer);
+
+          Game.this.currentRound = new Round(1, "Final Round",
+              Game.this.players, nonDupQuestions, display);
+          Game.this.currentRound.answer();
+          Game.this.currentRound.vote();
+          Game.this.currentRound.displayResults();
+          Game.this.currentRound.saveResults(writer);
+
+          Game.this.currentRound = null; // End the game
+          Game.this.players = new ArrayList<Player>();
+
+          if (writer != null) {
+            writer.writeCharacters("\n  ");
+            writer.writeEndElement();
+            writer.writeEndElement();
+            writer.writeEndDocument();
+
+            writer.flush();
+            writer.close();
+          }
+        }
+        catch (XMLStreamException | IOException e) {
+          e.printStackTrace();
+        }
 
         // Go back to game setup
         gameui.goToSetup();
@@ -237,6 +324,14 @@ public class Game extends GameObject {
   }
 
   /**
+   * Sort the players of the game in order by point values
+   */
+  public synchronized void sortPlayers() {
+    this.players.stream()
+        .sorted((p1, p2) -> Integer.compare(p1.getPoints(), p2.getPoints()));
+  }
+
+  /**
    * Set the Game UI
    *
    * @param gameui
@@ -274,5 +369,34 @@ public class Game extends GameObject {
    */
   public static void setMinPlayers(int min) {
     minPlayers = min;
+  }
+
+  /**
+   * Set whether or not logs will be saved
+   *
+   * @param storeLogs
+   *          the storeLogs to set
+   */
+  public static void setStoreLogs(boolean storeLogs) {
+    Game.storeLogs = storeLogs;
+  }
+
+  /**
+   * Get the log directory
+   *
+   * @return the log directory
+   */
+  public static String getLogsDir() {
+    return strLogDir;
+  }
+
+  /**
+   * Set the log directory
+   *
+   * @param strLogDir
+   *          the new directory in which log will be saved
+   */
+  public static void setLogsDir(String strLogDir) {
+    Game.strLogDir = strLogDir;
   }
 }

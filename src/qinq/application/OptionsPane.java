@@ -47,6 +47,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import qinq.resource.Game;
 import qinq.resource.Question;
+import qinq.resource.Round;
 
 public class OptionsPane extends BorderPane {
   TextArea                   questions;
@@ -83,6 +84,7 @@ public class OptionsPane extends BorderPane {
     Spinner<Integer> max_players =
         new Spinner<Integer>(3, Integer.MAX_VALUE, 10);
     Spinner<Integer> min_players = new Spinner<Integer>(3, 10, 3);
+    Spinner<Integer> wait_time = new Spinner<Integer>(400, 4000, 1800);
 
     Question.setNumAnswers(2);
     num_answers.valueProperty().addListener(
@@ -103,6 +105,11 @@ public class OptionsPane extends BorderPane {
           .setMin(newValue - 1);
       ((IntegerSpinnerValueFactory) max_players.getValueFactory())
           .setMin(newValue);
+    });
+
+    Round.setExtraWaitTime(1800);
+    wait_time.valueProperty().addListener((obs, oldValue, newValue) -> {
+      Round.setExtraWaitTime(newValue);
     });
 
     this.categories = new HashMap<CheckBox, Set<String>>();
@@ -137,6 +144,7 @@ public class OptionsPane extends BorderPane {
         new HBox(10, new Label("Number of Answers per question:"), num_answers),
         new HBox(20, new Label("Min Players:"), min_players),
         new HBox(20, new Label("Max Players:"), max_players),
+        new HBox(20, new Label("Extra Wait Time:"), wait_time),
         new HBox(20, logs_cb, logs_tb));
 
     this.setTop(header);

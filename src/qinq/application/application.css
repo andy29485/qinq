@@ -29,7 +29,7 @@ Label {
   -fx-hgap: 10;
 }
 
-.players > .player-label {
+#scores, .players > .player-label {
   -fx-font: 18px Serif;
   -fx-padding: 0 14 0 14;
   -fx-border-radius: 3;

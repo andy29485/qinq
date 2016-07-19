@@ -293,6 +293,7 @@ public class Round {
     else {
       this.display.changeState("Round Results");
       FlowPane scores = new FlowPane();
+      scores.setId("scores");
       for (Player p : this.players) {
         scores.getChildren().add(p.getNameLabel(String.valueOf(p.getPoints())));
       }

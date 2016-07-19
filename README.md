@@ -45,11 +45,11 @@ This project is distributed under the GPLv3 Licence.
 | Item | Status |
 | ---- | :----: |
 | View results on web-end | in progress |
-| Round/Game results | planned |
 | Come up with more questions | outsourcing |
 | Player images - not just colours | considering |
 | Make web-end look **even** better | considering |
 | Allow internet based connecting(non-local) | considering |
+| Round/Game results | complete |
 | Scores | complete |
 | Make web-end look better | complete |
 | Allow selection of categorised answers | complete |

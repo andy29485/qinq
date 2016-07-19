@@ -65,9 +65,13 @@ public class Round {
    */
   private List<Player>   players;
   /**
-   * LiThe type of round that this is
+   * The type of round that this is
    */
   private int            nRoundType;
+  /**
+   * The amount of time to wait after the countdown is complete(in milliseconds)
+   */
+  private static int     nExtraWaitTime;
 
   /**
    * @param nRoundType
@@ -96,6 +100,7 @@ public class Round {
     this.display = display; // the display on the main window
     int random;
     this.dTime = 0;
+    this.strRoundName = strRoundName;
     this.questions = new ArrayList<Question>(); // list of questions to be used
     this.players = players; // list of players
     this.nRoundType = nRoundType;
@@ -226,7 +231,7 @@ public class Round {
       this.display.refresh();
     }
     try {
-      Thread.sleep(3000);
+      Thread.sleep(Round.nExtraWaitTime);
     }
     catch (InterruptedException e) {
       e.printStackTrace();
@@ -258,38 +263,42 @@ public class Round {
       this.display.changeState("Voting");
 
       this.question = question;
-      this.setVotes();
-      this.display.setConent(this.question.getVotingPane());
-      this.wait(Question.getVoteTime() * this.question.getAnswers().size(),
-          () -> {
-            for (Player p : this.players)
-              if (p.getVotes() > 0)
-                return false;
-            return true;
-          });
-
+      if (this.question.canVote()) {
+        this.setVotes();
+        this.display.setContent(this.question.getVotingPane());
+        this.wait(Question.getVoteTime() * this.question.getAnswers().size(),
+            () -> {
+              for (Player p : this.players)
+                if (p.getVotes() > 0)
+                  return false;
+              return true;
+            });
+      }
       this.displayResults();
+      this.question = null;
     }
   }
 
   /**
    * Display the result for the current question and move on after three seconds
    *
-   * If current questions is null, display the rsults for this round
+   * If current questions is null, display the results for this round
    */
   public void displayResults() {
-    this.display.changeState("Results");
     if (this.question != null) {
-      this.display.setConent(this.question.getResultsPane());
-      this.wait(12, null);
+      this.display.changeState("Question Results");
+      this.display
+          .setContent(this.question.getResultsPane(this.players.size()));
     }
     else {
+      this.display.changeState("Round Results");
       FlowPane scores = new FlowPane();
       for (Player p : this.players) {
         scores.getChildren().add(p.getNameLabel(String.valueOf(p.getPoints())));
       }
-      this.display.setConent(scores);
+      this.display.setContent(scores);
     }
+    this.wait(12, null);
   }
 
   /**
@@ -360,7 +369,6 @@ public class Round {
       writer.writeEndElement();
     }
     catch (XMLStreamException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
@@ -380,5 +388,24 @@ public class Round {
           break;
       }
     }
+  }
+
+  /**
+   * Get the extra wait time
+   *
+   * @return the Extra Wait Time
+   */
+  public static int getExtraWaitTime() {
+    return nExtraWaitTime;
+  }
+
+  /**
+   * Set the extra wait time
+   *
+   * @param nExtraWaitTime
+   *          the extra wait time to set
+   */
+  public static void setExtraWaitTime(int nExtraWaitTime) {
+    Round.nExtraWaitTime = nExtraWaitTime;
   }
 }

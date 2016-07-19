@@ -163,9 +163,10 @@ public class Game extends GameObject {
         try {
           File logs = new File(Game.getLogsDir());
           String time = getISO8601StringForCurrentDate();
-          File log = new File(logs, time + ".log");
+          File log = new File(logs, time.replaceAll(":", "") + ".log");
           if (Game.storeLogs && (logs.exists() || logs.mkdirs())
-              && logs.isDirectory() && log.canWrite())
+              && logs.isDirectory() && (log.exists() || log.createNewFile())
+              && log.canWrite())
             writer = factory.createXMLStreamWriter(new FileWriter(log));
           else
             writer = null;

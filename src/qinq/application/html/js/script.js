@@ -106,7 +106,6 @@ function createPlayer() {
 function submitAnswer() {
   document.getElementById("welcome").style.display      = 'none';
   document.getElementById("vote-box").style.display     = 'none';
-  document.getElementById("welcome").style.display      = 'none';
 
   var answer = document.getElementById('answer-field').value;
   var aid = document.getElementById('answer-field').dataset.id;
@@ -168,6 +167,7 @@ function getInfo() {
         document.getElementById("answer-field").value         = '';
         document.getElementById("question-box").style.display = 'none';
         document.getElementById("vote-box").style.display     = 'none';
+        document.getElementById("results-box").style.display  = 'none';
       }
       else {
         document.getElementById("timer").style.display = 'block';
@@ -180,6 +180,7 @@ function getInfo() {
         document.getElementById("question-box").style.display = 'block';
         document.getElementById("vote-box").style.display     = 'none';
         document.getElementById("welcome").style.display      = 'none';
+        document.getElementById("results-box").style.display  = 'none';
         state = 'answering';
       }
       else if(json['action'] == 'vote') {
@@ -187,6 +188,7 @@ function getInfo() {
         document.getElementById("vote-box").style.display     = 'block';
         document.getElementById("question-box").style.display = 'none';
         document.getElementById("welcome").style.display      = 'none';
+        document.getElementById("results-box").style.display  = 'none';
         document.getElementById("answers").innerHTML = '';
         document.getElementById("vote-question").innerHTML = json['question'];
         document.getElementById("votes-left-span").innerHTML = json['votes'];
@@ -214,6 +216,79 @@ function getInfo() {
       else {
         document.getElementById("question-box").style.display = 'none';
         document.getElementById("vote-box").style.display     = 'none';
+        document.getElementById("results-box").innerHTML = '';
+        var element = document.getElementById("results-box");
+        
+        if(json['info'] != 'none' && json['info']['info'] != 'none') {
+          if(json['info']['info'] == 'answering'
+             || json['info']['info'] == 'round') {
+            var div = document.createElement("div");
+            div.id= 'info';
+            json['info']['players'].forEach(function(player) {
+              var player_div = document.createElement("div");
+              var node = document.createTextNode(player['name']);
+              player_div.className = 'player';
+              player_div.style.backgroundColor = player['color'];
+              player_div.appendChild(node);
+              div.appendChild(player_div);
+            }
+            element.appendChild(div);
+          } 
+          else if(json['info']['info'] == 'question') {
+
+            var div = document.createElement("div");
+            div.id = 'answers';
+            
+            json['info']['answers'].forEach(function(answer) {
+              var answer_div = document.createElement("div");
+              answer_div.className = 'result-answer';
+
+              var player_div = document.createElement("div");
+              var node = document.createTextNode(answer['player']['name']);
+              player_div.className = 'player submitter';
+              player_div.style.backgroundColor = answer['player']['color'];
+              player_div.appendChild(node);
+              answer_div.appendChild(player_div);
+
+              var node = document.createTextNode(answer['score']);
+              var score_div = document.createElement("div");
+              score_div.className = 'score';
+              score_div.appendChild(node);
+              answer_div.appendChild(score_div);
+
+              var node = document.createTextNode(answer['answer']);
+              var answerVal_div = document.createElement("div");
+              answerVal_div.className = 'answer';
+              answerVal_div.appendChild(node);
+              answer_div.appendChild(answerVal_div);
+
+              var votes_div = document.createElement("div");
+              votes_div.className = 'votes';
+              
+              answer['votes'].forEach(function(vote) {
+                var node = document.createTextNode(vote['value']);
+                var vote_div = document.createElement("div");
+                vote_div.style.backgroundColor = vote['color'];
+                vote_div.className = 'vote';
+                vote_div.appendChild(node);
+                
+                
+                votes_div.appendChild(vote_div);
+              }
+              answer_div.appendChild(votes_div);
+
+              var node = document.createTextNode(json['info']['question']);
+              var question_div = document.createElement("div");
+              question_div.className = 'question';
+              question_div.appendChild(node);
+              element.appendChild(question_div);
+              
+              div.appendChild(answer_div);
+            }
+            element.appendChild(div);
+          } 
+          document.getElementById("results-box").style.display = 'block';
+        }
       }
     }
 

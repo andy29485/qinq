@@ -27,7 +27,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import javafx.scene.layout.FlowPane;
 import qinq.application.GamePane;
 
 /**
@@ -270,7 +269,6 @@ public class Round {
       this.question = question;
       if (this.question.canVote()) {
         this.setVotes();
-        this.display.setContent(this.question.getVotingPane());
         this.wait(Question.getVoteTime() * this.question.getAnswers().size(),
             () -> {
               for (Player p : this.players)
@@ -292,17 +290,9 @@ public class Round {
   public void displayResults() {
     if (this.question != null) {
       this.display.changeState("Question Results");
-      this.display
-          .setContent(this.question.getResultsPane(this.players.size()));
     }
     else {
       this.display.changeState("Round Results");
-      FlowPane scores = new FlowPane();
-      scores.setId("scores");
-      for (Player p : this.players) {
-        scores.getChildren().add(p.getNameLabel(String.valueOf(p.getPoints())));
-      }
-      this.display.setContent(scores);
     }
     this.wait(12, null);
   }
@@ -397,6 +387,15 @@ public class Round {
     for (Player p : this.spectators) {
       p.setVotes(1);
     }
+  }
+
+  /**
+   * Get the display
+   * 
+   * @return the GamePane that displays stuff
+   */
+  public GamePane getDisplay() {
+    return this.display;
   }
 
   /**

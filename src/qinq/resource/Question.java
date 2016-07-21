@@ -222,19 +222,20 @@ public class Question extends GameObject {
     for (Answer answer : this.lAnswers) {
       String strDisplay = "0";
       if (this.canVote()) {
-        answer.getPlayer().addPoints(answer.getNumVotes() * 100);
-        strDisplay = String.valueOf(answer.getNumVotes() * 100);
+        answer.setScore(answer.getNumVotes() * 100);
+        strDisplay = String.valueOf(answer.getScore());
 
         if (answer.getNumVotes() == nTotalPoints) {
-          answer.getPlayer().addPoints(answer.getNumVotes() * 100);
-          strDisplay += " (x2)";
+          answer.setScore(answer.getScore() * 2);
+          strDisplay += " (double)";
         }
       }
       else if (!answer.getAnswer().isEmpty()) {
-        strDisplay = String.valueOf((nPlayers - this.lAnswers.size()) * 100);
-        answer.getPlayer().addPoints((nPlayers - this.lAnswers.size()) * 100);
+        answer.setScore((nPlayers - this.lAnswers.size()) * 100);
+        strDisplay = String.valueOf(answer.getScore());
       }
 
+      answer.getPlayer().addPoints(answer.getScore());
       answers.getChildren().add(answer.getFinalAnswer(strDisplay));
     }
 

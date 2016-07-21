@@ -48,6 +48,10 @@ public class Answer extends GameObject {
    */
   private String               strAnswer;
   /**
+   * The score that this answer received
+   */
+  private int                  nScore;
+  /**
    * List of people that vote for this question
    */
   private Map<Player, Integer> votes;
@@ -67,6 +71,7 @@ public class Answer extends GameObject {
     this.strAnswer = "";
     this.p = p;
     this.q = q;
+    this.setScore(0);
     this.votes = new HashMap<Player, Integer>();
     this.p.getAnswers().add(this);
   }
@@ -205,5 +210,19 @@ public class Answer extends GameObject {
     container.setBottom(voters);
 
     return container;
+  }
+
+  /**
+   * @return the nScore
+   */
+  public int getScore() {
+    return nScore;
+  }
+
+  /**
+   * @param nScore the nScore to set
+   */
+  public void setScore(int nScore) {
+    this.nScore = nScore;
   }
 }

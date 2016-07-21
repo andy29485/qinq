@@ -44,6 +44,7 @@ import org.json.JSONObject;
 import qinq.resource.Answer;
 import qinq.resource.Game;
 import qinq.resource.Player;
+import qinq.resource.Round;
 
 /**
  * Class that is responsible for managing the web interface of the game.
@@ -169,6 +170,7 @@ public class GameServer {
       double time;
       Answer a;
       Player p;
+      Round round = GameServer.this.game.getRound();
 
       JSONObject jsonOut = new JSONObject();
 
@@ -215,17 +217,15 @@ public class GameServer {
           else
             time = 0;
           if (json.getString("state").equalsIgnoreCase("waiting")) {
-            if (p.getAnswers().size() > 0
-                && GameServer.this.game.getRound() != null
-                && GameServer.this.game.getRound().getQuestion() == null) {
+            if (p.getAnswers().size() > 0 && round != null
+                && round.getQuestion() == null) {
               a = p.getAnswers().get(0);
               jsonOut.put("action", "answer");
               jsonOut.put("time", time);
               jsonOut.put("aid", a.getID());
               jsonOut.put("question", a.getQuestion());
             }
-            else if (GameServer.this.game.getRound() != null
-                && GameServer.this.game.getRound().getQuestion() != null
+            else if (round != null && round.getQuestion() != null
                 && p.getVotes() > 0) {
               jsonOut.put("action", "vote");
               jsonOut.put("time", time);
@@ -248,10 +248,17 @@ public class GameServer {
             jsonOut.put("action", "nothing");
             jsonOut.put("time", time);
           }
+          if (round != null) {
+            jsonOut.put("info", round.getDisplay().getJson());
+          }
+          else {
+            jsonOut.put("info", "none");
+          }
           break;
         default:
           return;
       }
+
       response.setContentType("application/json");
       response.setHeader("Cache-Control", "no-cache");
       response.setContentLength(jsonOut.toString().length());

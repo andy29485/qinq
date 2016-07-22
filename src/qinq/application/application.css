@@ -29,7 +29,7 @@ Label {
   -fx-hgap: 10;
 }
 
-#scores, .players > .player-label {
+#scores > .player-label, .players > .player-label {
   -fx-font: 18px Serif;
   -fx-padding: 0 14 0 14;
   -fx-border-radius: 3;
@@ -41,7 +41,7 @@ Label {
 .answer-node {
   -fx-background-color: #aaa;
   -fx-border-style: solid;
-  -fx-border-radius: 5;
+  -fx-border-radius: 5px;
   -fx-padding: 5px;
   -fx-border-width: 2px;
   -fx-border-insets: -1;

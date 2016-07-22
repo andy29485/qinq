@@ -90,7 +90,7 @@ public class Player extends GameObject {
    *          player's ip address
    */
   public Player(String strName, String ip) {
-    super(strName.isEmpty() ? -Player.nPlayers++ : Player.nPlayers++);
+    super(strName.isEmpty() ? -++Player.nPlayers : Player.nPlayers++);
     this.answers = new ArrayList<Answer>();
     this.strName = strName.isEmpty() ? "Spectator" : strName;
     this.strIp = ip;

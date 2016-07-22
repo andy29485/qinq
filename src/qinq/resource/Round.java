@@ -234,11 +234,14 @@ public class Round {
       this.dTime--;
       this.display.refresh();
     }
-    try {
-      Thread.sleep(Round.nExtraWaitTime);
-    }
-    catch (InterruptedException e) {
-      e.printStackTrace();
+    this.dTime = 0;
+    if (!tc.canMoveOn()) {
+      try {
+        Thread.sleep(Round.nExtraWaitTime);
+      }
+      catch (InterruptedException e) {
+        e.printStackTrace();
+      }
     }
   }
 
@@ -391,7 +394,7 @@ public class Round {
 
   /**
    * Get the display
-   * 
+   *
    * @return the GamePane that displays stuff
    */
   public GamePane getDisplay() {

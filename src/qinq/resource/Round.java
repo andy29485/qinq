@@ -235,7 +235,7 @@ public class Round {
       this.display.refresh();
     }
     this.dTime = 0;
-    if (!tc.canMoveOn()) {
+    if (tc == null || !tc.canMoveOn()) {
       try {
         Thread.sleep(Round.nExtraWaitTime);
       }

@@ -199,8 +199,12 @@ public class GameServer {
           aid = Integer.valueOf(json.getString("aid"));
           p = g.getPlayerById(id);
           a = g.getAnswerById(aid);
-          jsonOut.put("voted", a.vote(p));
-          jsonOut.put("left", p.getVotes());
+          if (a != null && p != null) {
+            jsonOut.put("voted", a.vote(p));
+            jsonOut.put("left", p.getVotes());
+          }
+          else
+            return;
           break;
         case "get state":
           id = Integer.valueOf(json.getString("id"));

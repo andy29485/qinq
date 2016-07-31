@@ -19,12 +19,15 @@
 package qinq.application;
 
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.UnknownHostException;
+import java.util.Enumeration;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -105,6 +108,34 @@ public class GameServer {
     }
   }
 
+  public static InetAddress getCurrentIp() throws SocketException {
+    Enumeration<NetworkInterface> networkInterfaces =
+        NetworkInterface.getNetworkInterfaces();
+    while (networkInterfaces.hasMoreElements()) {
+      NetworkInterface ni = networkInterfaces.nextElement();
+      Enumeration<InetAddress> nias = ni.getInetAddresses();
+      while (nias.hasMoreElements()) {
+        InetAddress ia = nias.nextElement();
+        if (!ia.isLinkLocalAddress() && !ia.isLoopbackAddress()
+            && ia instanceof Inet4Address) {
+          return ia;
+        }
+      }
+    }
+    networkInterfaces = NetworkInterface.getNetworkInterfaces();
+    while (networkInterfaces.hasMoreElements()) {
+      NetworkInterface ni = networkInterfaces.nextElement();
+      Enumeration<InetAddress> nias = ni.getInetAddresses();
+      while (nias.hasMoreElements()) {
+        InetAddress ia = nias.nextElement();
+        if (!ia.isLoopbackAddress() && ia instanceof Inet4Address) {
+          return ia;
+        }
+      }
+    }
+    return null;
+  }
+
   /**
    * Get the IP address and port to join the game
    *
@@ -116,12 +147,12 @@ public class GameServer {
       return "There was an error...";
     }
     try {
-      return String.format("%s:%d", InetAddress.getLocalHost().getHostAddress(),
+      return String.format("%s:%d", getCurrentIp().getHostAddress(),
           ((ServerConnector) this.server.getConnectors()[0]).getLocalPort());
     }
-    catch (UnknownHostException e) {
+    catch (SocketException e) {
       e.printStackTrace();
-      return "Unknown";
+      return "Unknown IP, are you connected to a network?";
     }
   }
 

@@ -12,6 +12,7 @@ This project is distributed under the GPLv3 Licence.
 - Andriy Zasypkin - head developer / the bad graphics designer / all other
   things
 - Nelson Chen - contributed a question
+- Jason Tufano - contributed an idea for a question
 
 ## How To Use
 

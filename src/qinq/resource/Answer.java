@@ -201,8 +201,21 @@ public class Answer extends GameObject {
     FlowPane voters = new FlowPane();
     voters.getStyleClass().add("voters");
 
+    int nSpectatorVotes = 0;
+    Player spectator = null;
     for (Player p : this.votes.keySet()) {
-      Node vote = p.getNameLabel(String.valueOf(this.votes.get(p)));
+      if (p.getID() >= 0) {
+        Node vote = p.getNameLabel(String.valueOf(this.votes.get(p)));
+        vote.getStyleClass().add("vote");
+        voters.getChildren().add(vote);
+      }
+      else {
+        nSpectatorVotes++;
+        spectator = p;
+      }
+    }
+    if (nSpectatorVotes >= 0 && spectator != null) {
+      Node vote = spectator.getNameLabel(String.valueOf(nSpectatorVotes));
       vote.getStyleClass().add("vote");
       voters.getChildren().add(vote);
     }
@@ -220,7 +233,8 @@ public class Answer extends GameObject {
   }
 
   /**
-   * @param nScore the nScore to set
+   * @param nScore
+   *          the nScore to set
    */
   public void setScore(int nScore) {
     this.nScore = nScore;

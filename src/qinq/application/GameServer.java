@@ -191,6 +191,8 @@ public class GameServer {
         case "send answer":
           id = Integer.valueOf(json.getString("id"));
           a = g.getAnswerById(id);
+          if (a == null)
+            return;
           a.setAnswer(json.getString("answer"));
           a.getPlayer().getAnswers().remove(a);
           break;

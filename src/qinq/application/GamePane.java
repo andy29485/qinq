@@ -127,13 +127,25 @@ public class GamePane extends BorderPane {
             jsonAnswer.put("answer", answer.getAnswer());
             jsonAnswer.put("score", answer.getScore());
 
+            int nSpectatorVotes = 0;
             for (Entry<Player, Integer> vote : answer.getVotes().entrySet()) {
+              if (vote.getKey().getID() >= 0) {
+                jsonPlayer = new JSONObject();
+                jsonPlayer.put("value", String.format("%s - %d",
+                    vote.getKey().getName(), vote.getValue()));
+                jsonPlayer.put("color", vote.getKey().getColor());
+                jsonVotes.put(jsonPlayer);
+              }
+              else
+                nSpectatorVotes++;
+            }
+            if (nSpectatorVotes > 0 && game.getSpectators().size() > 0) {
+              Player spectator = game.getSpectators().get(0);
               jsonPlayer = new JSONObject();
               jsonPlayer.put("value", String.format("%s - %d",
-                  vote.getKey().getName(), vote.getValue()));
-              jsonPlayer.put("color", vote.getKey().getColor());
+                  spectator.getName(), nSpectatorVotes));
+              jsonPlayer.put("color", spectator.getColor());
               jsonVotes.put(jsonPlayer);
-
             }
             jsonAnswer.put("votes", jsonVotes);
             jsonAnswers.put(jsonAnswer);
@@ -151,7 +163,7 @@ public class GamePane extends BorderPane {
             Node scoreNode = p.getNameLabel(String.valueOf(p.getPoints()));
             scores.getChildren().add(scoreNode);
             JSONObject player = new JSONObject();
-            player.put("value",
+            player.put("name",
                 String.format("%s - %d", p.getName(), p.getPoints()));
             player.put("color", p.getColor());
             jsonPlayers.put(player);

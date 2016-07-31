@@ -45,11 +45,10 @@ This project is distributed under the GPLv3 Licence.
 ## TODO
 | Item | Status |
 | ---- | :----: |
-| View results on web-end | in progress |
 | Come up with more questions | outsourcing |
 | Player images - not just colours | considering |
-| Make web-end look **even** better | considering |
 | Allow internet based connecting(non-local) | considering |
+| View results on web-end | complete |
 | Round/Game results | complete |
 | Scores | complete |
 | Make web-end look better | complete |
@@ -57,3 +56,4 @@ This project is distributed under the GPLv3 Licence.
 | Allow addition of custom categories | complete |
 | End timer if action was complete | complete |
 | Allow kicking of players | complete |
+| Make web-end look **even** better | dropped |

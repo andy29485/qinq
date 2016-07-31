@@ -71,11 +71,11 @@ public class Player extends GameObject {
                                                     add("#ff6666");
                                                     add("#66ff99");
                                                     add("#3366ff");
-                                                    add("#d966ff");
+                                                    add("#b100ec");
                                                     add("#38e0ff");
                                                     add("#ffcc66");
                                                     add("#cc6600");
-                                                    add("#cc33ff");
+                                                    add("#f88fe8");
                                                     add("#009999");
                                                     add("#cccc00");
                                                   }
@@ -108,7 +108,7 @@ public class Player extends GameObject {
    * @return the strName
    */
   public String getName() {
-    return this.strName;
+    return this.strName.toUpperCase();
   }
 
   /**
@@ -118,7 +118,7 @@ public class Player extends GameObject {
    *          the strName to set
    */
   public void setName(String strName) {
-    this.strName = strName;
+    this.strName = strName.toUpperCase();
   }
 
   /**

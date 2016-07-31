@@ -73,9 +73,10 @@ function spectate() {
     if(json['created'] == 'true') {
       player_id   = json['id'];
       player_name = json['name'];
-      document.getElementById('name').innerHTML        = player_name;
-      document.getElementById("welcome").style.display = 'none';
-      document.getElementById("header").style.backgroundColor=json['color'];
+      document.getElementById('name').innerHTML               =esc(player_name);
+      document.getElementById("welcome").style.display        = 'none';
+      document.getElementById("header").style.backgroundColor = json['color'];
+      document.getElementById("score").style.display          = 'none';
       getInfo();
     }
     else {
@@ -92,7 +93,7 @@ function createPlayer() {
     if(json['created'] == 'true') {
       player_id   = json['id'];
       player_name = json['name'];
-      document.getElementById('name').innerHTML        = player_name;
+      document.getElementById('name').innerHTML        = esc(player_name);
       document.getElementById("welcome").style.display = 'none';
       document.getElementById("header").style.backgroundColor=json['color'];
       getInfo();
@@ -160,7 +161,7 @@ function getInfo() {
     }
 
     document.getElementById("timer").innerHTML = timer;
-    document.getElementById("timer").innerHTML = json['score'];
+    document.getElementById("score").innerHTML = json['score'];
 
     if(state == 'answering' || state =='voting') {
       if(timer <= 0) {
@@ -176,8 +177,9 @@ function getInfo() {
     }
     else {
       if(json['action'] == 'answer') {
-        document.getElementById("answer-question").innerHTML = json['question'];
-        document.getElementById('answer-field').dataset.id   = json['aid'];
+        document.getElementById("answer-question").innerHTML  =
+                                                          esc(json['question']);
+        document.getElementById('answer-field').dataset.id    = json['aid'];
         document.getElementById("question-box").style.display = 'block';
         document.getElementById("vote-box").style.display     = 'none';
         document.getElementById("welcome").style.display      = 'none';
@@ -191,9 +193,10 @@ function getInfo() {
         document.getElementById("question-box").style.display = 'none';
         document.getElementById("welcome").style.display      = 'none';
         document.getElementById("results-box").style.display  = 'none';
-        document.getElementById("answers").innerHTML = '';
-        document.getElementById("vote-question").innerHTML = json['question'];
-        document.getElementById("votes-left-span").innerHTML = json['votes'];
+        document.getElementById("answers").innerHTML          = '';
+        document.getElementById("vote-question").innerHTML    =
+                                                          esc(json['question']);
+        document.getElementById("votes-left-span").innerHTML  = json['votes'];
         if(json['votes'] > 1)
           document.getElementById("votes-left-div").style.display = 'block';
         else
@@ -235,7 +238,7 @@ function getInfo() {
           if(json['info']['info'] == 'answering'
            || json['info']['info'] == 'round') {
             var div = document.createElement("div");
-            div.id= 'info';
+            div.id  = 'info';
             json['info']['players'].forEach(function(player) {
               var player_div = document.createElement("div");
               var node = document.createTextNode(player['name']);
@@ -252,6 +255,9 @@ function getInfo() {
             div.id = 'answers';
             
             json['info']['answers'].forEach(function(answer) {
+              var answer_div_wrap = document.createElement("div");
+              answer_div_wrap.className = 'result-answer-wrapper';
+              
               var answer_div = document.createElement("div");
               answer_div.className = 'result-answer';
 
@@ -288,8 +294,8 @@ function getInfo() {
                 votes_div.appendChild(vote_div);
               });
               answer_div.appendChild(votes_div);
-              
-              div.appendChild(answer_div);
+              answer_div_wrap.appendChild(answer_div);
+              div.appendChild(answer_div_wrap);
             });
 
             var node = document.createTextNode(json['info']['question']);
@@ -339,14 +345,9 @@ function removeElementsByClass(className){
   }
 }
 
-function escapeXml(unsafe) {
-  return unsafe.replace(/[<>&'"]/g, function (c) {
-    switch (c) {
-      case '<': return '&lt;';
-      case '>': return '&gt;';
-      case '&': return '&amp;';
-      case '\'': return '&apos;';
-      case '"': return '&quot;';
-    }
-  });
+function esc(html) {
+  var text = document.createTextNode(html);
+  var div = document.createElement('div');
+  div.appendChild(text);
+  return div.innerHTML;
 }

@@ -231,6 +231,7 @@ public class Game extends GameObject {
 
           Game.this.currentRound = null; // End the game
           Game.this.players = new ArrayList<Player>();
+          display.refresh();
 
           if (writer != null) {
             writer.writeCharacters("\n  ");
@@ -260,6 +261,15 @@ public class Game extends GameObject {
    */
   public synchronized List<Player> getPlayers() {
     return this.players;
+  }
+
+  /**
+   * Get spectators that are spectating this game
+   *
+   * @return list of spectators
+   */
+  public synchronized List<Player> getSpectators() {
+    return this.spectators;
   }
 
   /**
@@ -350,7 +360,7 @@ public class Game extends GameObject {
    */
   public synchronized void sortPlayers() {
     this.players = this.players.stream()
-        .sorted((p1, p2) -> Integer.compare(p1.getPoints(), p2.getPoints()))
+        .sorted((p1, p2) -> Integer.compare(p2.getPoints(), p1.getPoints()))
         .collect(Collectors.toList());
     ;
   }

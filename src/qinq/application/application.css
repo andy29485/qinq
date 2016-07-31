@@ -28,9 +28,18 @@ Label {
   -fx-vgap: 10;
   -fx-hgap: 10;
 }
+.player-label {
+  -fx-wrap-text: true;
+  -fx-text-overrun: ellipsis;
+  -fx-max-height: 24px;
+}
 
+#scores {
+  -fx-vgap: 5;
+  -fx-hgap: 9;
+}
 #scores > .player-label, .players > .player-label {
-  -fx-font: 18px Serif;
+  -fx-font: 14px Serif;
   -fx-padding: 0 14 0 14;
   -fx-border-radius: 3;
   -fx-border-width: 2px;
@@ -57,27 +66,33 @@ Label {
   -fx-hgap: 10;
   -fx-alignment: top-center;
 }
-.vote {
-  -fx-font: 18px Serif;
-  -fx-border-radius: 3;
+.voters .vote {
+  -fx-font: 12px Serif;
+  -fx-border-radius: 3px;
   -fx-border-style: solid;
   -fx-border-width: 1px;
   -fx-border-insets: -1;
+  -fx-max-width: 180px;
 }
 .voters {
-  -fx-hgap: 6;
-  -fx-vgap: 4;
+  -fx-hgap: 6px;
+  -fx-vgap: 4px;
   -fx-alignment: bottom-center;
 }
 .answer-node .player-label {
-  -fx-font: 22px Serif;
-  -fx-min-width: 20;
-  -fx-padding: 0 9 0 9;
+  -fx-font: 17px Serif;
+  -fx-min-width: 20px;
+  -fx-max-width: 117px;
+  -fx-padding: 0px 9px 0px 9px;
   -fx-border-style: solid;
-  -fx-border-radius: 3;
-  -fx-border-insets: -1;
+  -fx-border-radius: 3px;
+  -fx-border-insets: -1px;
   -fx-alignment: center;
 }
+.answer-node .score {
+  -fx-max-width: 70px;
+}
 .answer-node > Label {
-  -fx-font: 14px Serif;
+  -fx-font: 13px Serif;
+  -fx-wrap-text: true;
 }

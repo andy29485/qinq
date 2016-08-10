@@ -46,6 +46,7 @@ import org.json.JSONObject;
 
 import qinq.resource.Answer;
 import qinq.resource.Game;
+import qinq.resource.MySocketHandler;
 import qinq.resource.Player;
 import qinq.resource.Round;
 
@@ -83,8 +84,10 @@ public class GameServer {
     catch (URISyntaxException e) {
       e.printStackTrace();
     }
+
     HandlerList handlers = new HandlerList();
-    handlers.setHandlers(new Handler[] { new MyHandler(), resource_handler });
+    handlers.setHandlers(new Handler[] { new MyHandler(), resource_handler,
+        new MySocketHandler() });
     this.server.setHandler(handlers);
 
     try {

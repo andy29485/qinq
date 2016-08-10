@@ -21,6 +21,25 @@ var player_name = '';
 var timer       = 0;
 var state       = 'waiting';
 
+var ws = new WebSocket("ws://" + location.host + "/whatever");
+
+ws.onopen = function() {
+    alert("Opened!");
+    ws.send("Hello Server");
+};
+
+ws.onmessage = function (evt) {
+    alert("Message: " + evt.data);
+};
+
+ws.onclose = function() {
+    alert("Closed!");
+};
+
+ws.onerror = function(err) {
+    alert("Error: " + err);
+};
+
 function onLoad() {
   //visible:
   //document.getElementById("id-name").style.display = 'block';
@@ -77,7 +96,8 @@ function spectate() {
       document.getElementById("welcome").style.display        = 'none';
       document.getElementById("header").style.backgroundColor = json['color'];
       document.getElementById("score").style.display          = 'none';
-      getInfo();
+      //Deprecated: ajax
+      //getInfo();
     }
     else {
       document.getElementById("welcome").style.display    = 'block';
@@ -96,7 +116,8 @@ function createPlayer() {
       document.getElementById('name').innerHTML        = esc(player_name);
       document.getElementById("welcome").style.display = 'none';
       document.getElementById("header").style.backgroundColor=json['color'];
-      getInfo();
+      //Deprecated: ajax
+      //getInfo();
     }
     else {
       document.getElementById("welcome").style.display    = 'block';
@@ -311,7 +332,8 @@ function getInfo() {
       }
     }
 
-    window.setTimeout(getInfo, 1000);
+    //Deprecated: ajax
+    //window.setTimeout(getInfo, 1000);
   });
 }
 

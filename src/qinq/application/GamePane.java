@@ -49,7 +49,8 @@ public class GamePane extends BorderPane {
     this.header = new HBox();
     this.players = new FlowPane();
     this.info = new JSONObject();
-    info.put("info", "none");
+    this.info.put("action", "info");
+    this.info.put("info", "none");
 
     this.header.getStyleClass().add("header");
     this.players.getStyleClass().add("players");
@@ -72,6 +73,7 @@ public class GamePane extends BorderPane {
           GamePane.this.labelTime.setText("");
         if (GamePane.this.labelState.getText().equalsIgnoreCase("Answering")) {
           info = new JSONObject();
+          info.put("action", "info");
           info.put("info", "answering");
           JSONArray jsonPlayers = new JSONArray();
           GamePane.this.players.getChildren().clear();
@@ -105,6 +107,7 @@ public class GamePane extends BorderPane {
         }
         else if (state.equalsIgnoreCase("Question Results")) {
           info = new JSONObject();
+          info.put("action", "info");
           info.put("info", "question");
           Question question = GamePane.this.game.getRound().getQuestion();
           GamePane.this.setContent(
@@ -155,6 +158,7 @@ public class GamePane extends BorderPane {
         }
         else if (state.equalsIgnoreCase("Round Results")) {
           info = new JSONObject();
+          info.put("action", "info");
           info.put("info", "round");
           FlowPane scores = new FlowPane();
           scores.setId("scores");
@@ -174,6 +178,7 @@ public class GamePane extends BorderPane {
         }
         else if (state.equalsIgnoreCase("Voting")) {
           info = new JSONObject();
+          info.put("action", "info");
           info.put("info", "none");
           GamePane.this.setContent(
               GamePane.this.game.getRound().getQuestion().getVotingPane());

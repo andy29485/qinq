@@ -41,13 +41,18 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.util.resource.Resource;
+import org.eclipse.jetty.websocket.server.WebSocketHandler;
+import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
+import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse;
+import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
+import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import qinq.resource.Answer;
 import qinq.resource.Game;
-import qinq.resource.MySocketHandler;
 import qinq.resource.Player;
+import qinq.resource.QinqWebSocketAddapter;
 import qinq.resource.Round;
 
 /**
@@ -85,9 +90,16 @@ public class GameServer {
       e.printStackTrace();
     }
 
+    WebSocketHandler wsHandler = new WebSocketHandler() {
+      @Override
+      public void configure(WebSocketServletFactory factory) {
+        factory.register(MySocketHandler.class);
+      }
+    };
+
     HandlerList handlers = new HandlerList();
-    handlers.setHandlers(new Handler[] { new MyHandler(), resource_handler,
-        new MySocketHandler() });
+    handlers.setHandlers(
+        new Handler[] { new MyHandler(), resource_handler, wsHandler });
     this.server.setHandler(handlers);
 
     try {
@@ -307,5 +319,22 @@ public class GameServer {
       response.flushBuffer();
       baseRequest.setHandled(true);
     }
+  }
+
+  class MySocketHandler extends WebSocketHandler {
+
+    @Override
+    public void configure(WebSocketServletFactory factory) {
+      factory.setCreator(new QinqWebSocketCreator());
+    }
+
+    private class QinqWebSocketCreator implements WebSocketCreator {
+      @Override
+      public Object createWebSocket(ServletUpgradeRequest request,
+          ServletUpgradeResponse response) {
+        return new QinqWebSocketAddapter(GameServer.this.game);
+      }
+    }
+
   }
 }

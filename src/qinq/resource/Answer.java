@@ -21,6 +21,8 @@ package qinq.resource;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.JSONObject;
+
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
@@ -238,5 +240,14 @@ public class Answer extends GameObject {
    */
   public void setScore(int nScore) {
     this.nScore = nScore;
+  }
+
+  public void send(int timer) {
+    JSONObject jsonOut = new JSONObject();
+    jsonOut.put("action", "answer");
+    jsonOut.put("time", timer);
+    jsonOut.put("aid", this.getID());
+    jsonOut.put("question", this.getQuestion());
+    this.p.getSocket().sendText(jsonOut.toString());
   }
 }

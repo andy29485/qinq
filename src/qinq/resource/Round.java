@@ -27,6 +27,9 @@ import java.util.concurrent.ThreadLocalRandom;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import qinq.application.GamePane;
 
 /**
@@ -209,7 +212,7 @@ public class Round {
    *
    * @return the number of seconds left until the current action is over.
    */
-  public int getTime() {
+  public synchronized int getTime() {
     return this.dTime;
   }
 
@@ -222,7 +225,7 @@ public class Round {
    *          functional interface that returns true when the timer should stop
    *          counting down
    */
-  public void wait(int time, TimeChecker tc) {
+  public synchronized void wait(int time, TimeChecker tc) {
     this.dTime = time;
     while (this.dTime > 0 && (tc == null || !tc.canMoveOn())) {
       try {
@@ -243,6 +246,12 @@ public class Round {
         e.printStackTrace();
       }
     }
+    for (Player p : this.players) {
+      p.getSocket().sendText(new JSONObject().put("action", "time").toString());
+    }
+    for (Player p : this.spectators) {
+      p.getSocket().sendText(new JSONObject().put("action", "time").toString());
+    }
   }
 
   /**
@@ -251,6 +260,10 @@ public class Round {
    */
   public void answer() {
     this.display.changeState("Answering");
+    for (Player p : this.players) {
+      if (p.getAnswers().size() > 0)
+        p.getAnswers().get(0).send(this.dTime);
+    }
     this.wait(Question.getAnswerTime() * Question.getNumAnswers(), () -> {
       for (Player p : this.players)
         if (p.getAnswers().size() > 0)
@@ -272,6 +285,40 @@ public class Round {
       this.question = question;
       if (this.question.canVote()) {
         this.setVotes();
+        for (Player p : this.players) {
+          if (p.getVotes() > 0) {
+            JSONObject jsonOut = new JSONObject();
+            jsonOut.put("action", "vote");
+            jsonOut.put("time", this.getTime());
+            jsonOut.put("question", question.getQuestion());
+            jsonOut.put("votes", p.getVotes());
+            JSONArray jSONArray = new JSONArray();
+            for (Answer tmp : question.getAnswers()) {
+              if (tmp.getPlayer() != p && !tmp.getAnswer().isEmpty())
+                jSONArray.put(new JSONObject().put("answer", tmp.getAnswer())
+                    .put("aid", tmp.getID()));
+            }
+            jsonOut.put("answers", jSONArray);
+            p.getSocket().sendText(jsonOut.toString());
+          }
+        }
+        for (Player p : this.spectators) {
+          if (p.getVotes() > 0) {
+            JSONObject jsonOut = new JSONObject();
+            jsonOut.put("action", "vote");
+            jsonOut.put("time", this.getTime());
+            jsonOut.put("question", question.getQuestion());
+            jsonOut.put("votes", p.getVotes());
+            JSONArray jSONArray = new JSONArray();
+            for (Answer tmp : question.getAnswers()) {
+              if (tmp.getPlayer() != p && !tmp.getAnswer().isEmpty())
+                jSONArray.put(new JSONObject().put("answer", tmp.getAnswer())
+                    .put("aid", tmp.getID()));
+            }
+            jsonOut.put("answers", jSONArray);
+            p.getSocket().sendText(jsonOut.toString());
+          }
+        }
         this.wait(Question.getVoteTime() * this.question.getAnswers().size(),
             () -> {
               for (Player p : this.players)
@@ -297,6 +344,10 @@ public class Round {
     else {
       this.display.changeState("Round Results");
     }
+    for (Player p : this.players)
+      p.getSocket().sendText(this.display.getJson().toString());
+    for (Player p : this.spectators)
+      p.getSocket().sendText(this.display.getJson().toString());
     this.wait(12, null);
   }
 

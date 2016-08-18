@@ -56,7 +56,7 @@ public class OptionsPane extends BorderPane {
   VBox                       options;
 
   public OptionsPane(GameUI root, Game game) {
-    Label header = new Label("Game Options v2.5.1");
+    Label header = new Label("Game Options v2.6.2");
     header.getStyleClass().add("header");
 
     HBox bottom = new HBox(20);

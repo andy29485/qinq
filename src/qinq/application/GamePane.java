@@ -132,7 +132,7 @@ public class GamePane extends BorderPane {
 
         jsonAnswer.put("player", jsonPlayer);
         jsonAnswer.put("answer", answer.getAnswer());
-        jsonAnswer.put("score", answer.getScore());
+        jsonAnswer.put("score", answer.getScoreStr());
 
         int nSpectatorVotes = 0;
         for (Entry<Player, Integer> vote : answer.getVotes().entrySet()) {

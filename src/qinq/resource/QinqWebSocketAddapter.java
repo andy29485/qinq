@@ -23,6 +23,7 @@ import java.io.IOException;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.api.WebSocketException;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -74,8 +75,8 @@ public class QinqWebSocketAddapter extends WebSocketAdapter {
 
     switch (json.getString("action").toLowerCase()) {
       case "create user":
-        this.createUser(json, jsonOut);
-        break;
+        this.createUser(json);
+        return;
       case "send answer":
         this.answer(json);
         return;
@@ -156,7 +157,8 @@ public class QinqWebSocketAddapter extends WebSocketAdapter {
    * @param jsonOut
    *          info sent back to the user
    */
-  private void createUser(JSONObject json, JSONObject jsonOut) {
+  private void createUser(JSONObject json) {
+    JSONObject jsonOut = new JSONObject();
     this.player = this.game.addPlayer(json.getString("name").toUpperCase(),
         this.session.getRemoteAddress().getAddress().getHostAddress());
     jsonOut.put("action", "creating");
@@ -169,6 +171,35 @@ public class QinqWebSocketAddapter extends WebSocketAdapter {
     }
     else {
       jsonOut.put("created", "false");
+    }
+    this.sendText(jsonOut.toString());
+
+    Question question;
+    if (this.player != null && this.game.getRound() != null) {
+      if (this.player.getAnswers().size() > 0) {
+        this.player.getAnswers().get(0).send(this.game.getRound().getTime());
+      }
+      else if ((question = this.game.getRound().getQuestion()) != null
+          && this.player.getVotes() > 0) {
+        jsonOut = new JSONObject();
+        jsonOut.put("action", "vote");
+        jsonOut.put("time", this.game.getRound().getTime());
+        jsonOut.put("question", question.getQuestion());
+        jsonOut.put("votes", this.player.getVotes());
+        if (this.player.getVotes() > 0) {
+          JSONArray jSONArray = new JSONArray();
+          for (Answer tmp : question.getAnswers()) {
+            if (tmp.getPlayer() != this.player && !tmp.getAnswer().isEmpty())
+              jSONArray.put(new JSONObject().put("answer", tmp.getAnswer())
+                  .put("aid", tmp.getID()));
+          }
+          jsonOut.put("answers", jSONArray);
+        }
+        this.sendText(jsonOut.toString());
+      }
+      else {
+        this.sendText(this.game.getRound().getDisplay().getJson().toString());
+      }
     }
   }
 

@@ -238,14 +238,14 @@ public class Round {
       this.display.refresh();
     }
     this.dTime = 0;
-    if (tc == null || !tc.canMoveOn()) {
-      try {
-        Thread.sleep(Round.nExtraWaitTime);
-      }
-      catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+
+    try {
+      Thread.sleep(Round.nExtraWaitTime);
     }
+    catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
     for (Player p : this.players) {
       p.getSocket().sendText(new JSONObject().put("action", "time").toString());
     }

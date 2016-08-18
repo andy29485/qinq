@@ -154,9 +154,15 @@ ws.onmessage = function (evt) {
               score_div.className = 'score';
               score_div.appendChild(node);
               answer_div.appendChild(score_div);
-  
-              var node = document.createTextNode(answer['answer']);
+
               var answerVal_div = document.createElement("div");
+              if(answer['answer'] && answer['answer'].length > 0 ) {
+                var node = document.createTextNode(answer['answer']);
+              }
+              else {
+                var node = document.createTextNode("(Did not Answer)");
+                answerVal_div.style.color = "#ff0000";
+              }
               answerVal_div.className = 'answer';
               answerVal_div.appendChild(node);
               answer_div.appendChild(answerVal_div);

@@ -58,6 +58,10 @@ public class Answer extends GameObject {
    */
   private Map<Player, Integer> votes;
   /**
+   * Score as a string for displayment purposes
+   */
+  private String               strScore;
+  /**
    * Total number of answers, use for generating answer IDs.
    */
   private static int           nAnswers = 0;
@@ -71,6 +75,7 @@ public class Answer extends GameObject {
   public Answer(Player p, Question q) {
     super(Answer.nAnswers++);
     this.strAnswer = "";
+    this.strScore = "";
     this.p = p;
     this.q = q;
     this.setScore(0);
@@ -228,18 +233,41 @@ public class Answer extends GameObject {
   }
 
   /**
+   * Get score
+   *
    * @return the nScore
    */
   public int getScore() {
-    return nScore;
+    return this.nScore;
   }
 
   /**
+   * Set Score
+   *
    * @param nScore
    *          the nScore to set
    */
   public void setScore(int nScore) {
     this.nScore = nScore;
+  }
+
+  /**
+   * Get score as string for displaying
+   *
+   * @return the strScore
+   */
+  public String getScoreStr() {
+    return this.strScore;
+  }
+
+  /**
+   * The displayable score
+   *
+   * @param strScore
+   *          the strScore to set
+   */
+  public void setScoreStr(String strScore) {
+    this.strScore = strScore;
   }
 
   public void send(int timer) {

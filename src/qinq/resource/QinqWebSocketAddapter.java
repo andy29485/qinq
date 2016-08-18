@@ -22,6 +22,7 @@ import java.io.IOException;
 
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
+import org.eclipse.jetty.websocket.api.WebSocketException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -89,6 +90,13 @@ public class QinqWebSocketAddapter extends WebSocketAdapter {
 
     this.sendText(jsonOut.toString());
 
+  }
+
+  /**
+   * Close the WebSocket
+   */
+  public void close() {
+    this.session.close();
   }
 
   /**
@@ -178,7 +186,7 @@ public class QinqWebSocketAddapter extends WebSocketAdapter {
       this.session.getRemote().sendString(message);
       return true;
     }
-    catch (IOException e) {
+    catch (IOException | WebSocketException e) {
       return false;
     }
   }

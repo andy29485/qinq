@@ -18,6 +18,8 @@
 
 package qinq.application;
 
+import org.json.JSONObject;
+
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -92,9 +94,11 @@ public class SetupPane extends BorderPane {
         player.setOnMouseClicked(event -> {
           Alert alert = new Alert(AlertType.CONFIRMATION);
           alert.setTitle("Confirmation Dialog");
-          alert.setHeaderText("Player will be deleted");
-          alert.setContentText("Are you sure you wish to remove this player?");
+          alert.setHeaderText("Player will be Kicked");
+          alert.setContentText("Are you sure you wish to kick this player?");
           if (alert.showAndWait().get() == ButtonType.OK) { // ... user chose OK
+            p.getSocket()
+                .sendText(new JSONObject().put("action", "kick").toString());
             SetupPane.this.players.getChildren().remove(player);
             SetupPane.this.game.getPlayers().remove(p);
           }

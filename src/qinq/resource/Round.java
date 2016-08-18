@@ -212,7 +212,7 @@ public class Round {
    *
    * @return the number of seconds left until the current action is over.
    */
-  public synchronized int getTime() {
+  public int getTime() {
     return this.dTime;
   }
 
@@ -225,7 +225,7 @@ public class Round {
    *          functional interface that returns true when the timer should stop
    *          counting down
    */
-  public synchronized void wait(int time, TimeChecker tc) {
+  public void wait(int time, TimeChecker tc) {
     this.dTime = time;
     while (this.dTime > 0 && (tc == null || !tc.canMoveOn())) {
       try {
@@ -260,11 +260,15 @@ public class Round {
    */
   public void answer() {
     this.display.changeState("Answering");
+    this.dTime = Question.getAnswerTime() * Question.getNumAnswers();
     for (Player p : this.players) {
       if (p.getAnswers().size() > 0)
         p.getAnswers().get(0).send(this.dTime);
     }
-    this.wait(Question.getAnswerTime() * Question.getNumAnswers(), () -> {
+    for (Player p : this.spectators) {
+      p.getSocket().sendText(this.display.getJson().toString());
+    }
+    this.wait(this.dTime, () -> {
       for (Player p : this.players)
         if (p.getAnswers().size() > 0)
           return false;
@@ -283,15 +287,16 @@ public class Round {
       this.display.changeState("Voting");
 
       this.question = question;
+      this.dTime = Question.getVoteTime() * this.question.getAnswers().size();
       if (this.question.canVote()) {
         this.setVotes();
         for (Player p : this.players) {
+          JSONObject jsonOut = new JSONObject();
+          jsonOut.put("action", "vote");
+          jsonOut.put("time", this.dTime);
+          jsonOut.put("question", question.getQuestion());
+          jsonOut.put("votes", p.getVotes());
           if (p.getVotes() > 0) {
-            JSONObject jsonOut = new JSONObject();
-            jsonOut.put("action", "vote");
-            jsonOut.put("time", this.getTime());
-            jsonOut.put("question", question.getQuestion());
-            jsonOut.put("votes", p.getVotes());
             JSONArray jSONArray = new JSONArray();
             for (Answer tmp : question.getAnswers()) {
               if (tmp.getPlayer() != p && !tmp.getAnswer().isEmpty())
@@ -299,8 +304,8 @@ public class Round {
                     .put("aid", tmp.getID()));
             }
             jsonOut.put("answers", jSONArray);
-            p.getSocket().sendText(jsonOut.toString());
           }
+          p.getSocket().sendText(jsonOut.toString());
         }
         for (Player p : this.spectators) {
           if (p.getVotes() > 0) {
@@ -319,13 +324,12 @@ public class Round {
             p.getSocket().sendText(jsonOut.toString());
           }
         }
-        this.wait(Question.getVoteTime() * this.question.getAnswers().size(),
-            () -> {
-              for (Player p : this.players)
-                if (p.getVotes() > 0)
-                  return false;
-              return true;
-            });
+        this.wait(this.dTime, () -> {
+          for (Player p : this.players)
+            if (p.getVotes() > 0)
+              return false;
+          return true;
+        });
       }
       this.displayResults();
       this.question = null;
@@ -338,6 +342,7 @@ public class Round {
    * If current questions is null, display the results for this round
    */
   public void displayResults() {
+    this.dTime = 12;
     if (this.question != null) {
       this.display.changeState("Question Results");
     }
@@ -348,7 +353,7 @@ public class Round {
       p.getSocket().sendText(this.display.getJson().toString());
     for (Player p : this.spectators)
       p.getSocket().sendText(this.display.getJson().toString());
-    this.wait(12, null);
+    this.wait(this.dTime, null);
   }
 
   /**

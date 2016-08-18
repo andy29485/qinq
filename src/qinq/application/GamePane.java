@@ -62,7 +62,7 @@ public class GamePane extends BorderPane {
   }
 
   public synchronized void refresh() {
-    Platform.runLater(new Runnable() {
+    Runnable task = new Runnable() {
       @Override
       public void run() {
         if (GamePane.this.game.getRound() != null
@@ -72,32 +72,114 @@ public class GamePane extends BorderPane {
         else
           GamePane.this.labelTime.setText("");
         if (GamePane.this.labelState.getText().equalsIgnoreCase("Answering")) {
-          info = new JSONObject();
-          info.put("action", "info");
-          info.put("info", "answering");
-          JSONArray jsonPlayers = new JSONArray();
           GamePane.this.players.getChildren().clear();
           GamePane.this.players.getChildren().add(new Label("Waiting on:"));
           for (Player p : GamePane.this.game.getPlayers()) {
             if (p.getAnswers().size() > 0) {
               GamePane.this.players.getChildren().add(p.getLargeLabel());
-              JSONObject jsonPlayer = new JSONObject();
-              jsonPlayer.put("name", p.getName());
-              jsonPlayer.put("color", p.getColor());
-              jsonPlayers.put(jsonPlayer);
             }
           }
-          info.put("players", jsonPlayers);
         }
       }
-    });
+    };
+    if (this.labelState.getText().equalsIgnoreCase("Answering")) {
+      info = new JSONObject();
+      info.put("action", "info");
+      info.put("info", "answering");
+      JSONArray jsonPlayers = new JSONArray();
+      for (Player p : this.game.getPlayers()) {
+        if (p.getAnswers().size() > 0) {
+          JSONObject jsonPlayer = new JSONObject();
+          jsonPlayer.put("name", p.getName());
+          jsonPlayer.put("color", p.getColor());
+          jsonPlayers.put(jsonPlayer);
+        }
+      }
+      info.put("players", jsonPlayers);
+    }
+    if (this.game.getRound() != null)
+      info.put("time", this.game.getRound().getTime());
+    Platform.runLater(task);
   }
 
   public synchronized JSONObject getJson() {
+    this.refresh();
+    System.out.println("Send: " + info.toString());
     return info;
   }
 
   public synchronized void changeState(String state) {
+    if (state.equalsIgnoreCase("Question Results")) {
+      Question question = this.game.getRound().getQuestion();
+      info = new JSONObject();
+      info.put("action", "info");
+      info.put("info", "question");
+      info.put("question", question.getQuestion());
+
+      question.calcResults(GamePane.this.game.getPlayers().size());
+
+      JSONObject jsonPlayer;
+      JSONObject jsonAnswer;
+      JSONArray jsonVotes;
+      JSONArray jsonAnswers = new JSONArray();
+      for (Answer answer : question.getAnswers()) {
+        jsonAnswer = new JSONObject();
+        jsonPlayer = new JSONObject();
+        jsonVotes = new JSONArray();
+
+        jsonPlayer.put("name", answer.getPlayer().getName());
+        jsonPlayer.put("color", answer.getPlayer().getColor());
+
+        jsonAnswer.put("player", jsonPlayer);
+        jsonAnswer.put("answer", answer.getAnswer());
+        jsonAnswer.put("score", answer.getScore());
+
+        int nSpectatorVotes = 0;
+        for (Entry<Player, Integer> vote : answer.getVotes().entrySet()) {
+          if (vote.getKey().getID() >= 0) {
+            jsonPlayer = new JSONObject();
+            jsonPlayer.put("value", String.format("%s - %d",
+                vote.getKey().getName(), vote.getValue()));
+            jsonPlayer.put("color", vote.getKey().getColor());
+            jsonVotes.put(jsonPlayer);
+          }
+          else
+            nSpectatorVotes++;
+        }
+        if (nSpectatorVotes > 0 && game.getSpectators().size() > 0) {
+          Player spectator = game.getSpectators().get(0);
+          jsonPlayer = new JSONObject();
+          jsonPlayer.put("value",
+              String.format("%s - %d", spectator.getName(), nSpectatorVotes));
+          jsonPlayer.put("color", spectator.getColor());
+          jsonVotes.put(jsonPlayer);
+        }
+        jsonAnswer.put("votes", jsonVotes);
+        jsonAnswers.put(jsonAnswer);
+      }
+      info.put("answers", jsonAnswers);
+
+    }
+    else if (state.equalsIgnoreCase("Round Results")) {
+      info = new JSONObject();
+      info.put("action", "info");
+      info.put("info", "round");
+      JSONArray jsonPlayers = new JSONArray();
+      for (Player p : this.game.getPlayers()) {
+        JSONObject player = new JSONObject();
+        player.put("name",
+            String.format("%s - %d", p.getName(), p.getPoints()));
+        player.put("color", p.getColor());
+        jsonPlayers.put(player);
+      }
+      info.put("players", jsonPlayers);
+
+    }
+    else if (state.equalsIgnoreCase("Voting")) {
+      info = new JSONObject();
+      info.put("action", "info");
+      info.put("info", "none");
+    }
     Platform.runLater(new Runnable() {
       @Override
       public void run() {
@@ -106,80 +188,19 @@ public class GamePane extends BorderPane {
           GamePane.this.setContent(GamePane.this.players);
         }
         else if (state.equalsIgnoreCase("Question Results")) {
-          info = new JSONObject();
-          info.put("action", "info");
-          info.put("info", "question");
           Question question = GamePane.this.game.getRound().getQuestion();
-          GamePane.this.setContent(
-              question.getResultsPane(GamePane.this.game.getPlayers().size()));
-          info.put("question", question.getQuestion());
-
-          JSONObject jsonPlayer;
-          JSONObject jsonAnswer;
-          JSONArray jsonVotes;
-          JSONArray jsonAnswers = new JSONArray();
-          for (Answer answer : question.getAnswers()) {
-            jsonAnswer = new JSONObject();
-            jsonPlayer = new JSONObject();
-            jsonVotes = new JSONArray();
-
-            jsonPlayer.put("name", answer.getPlayer().getName());
-            jsonPlayer.put("color", answer.getPlayer().getColor());
-
-            jsonAnswer.put("player", jsonPlayer);
-            jsonAnswer.put("answer", answer.getAnswer());
-            jsonAnswer.put("score", answer.getScore());
-
-            int nSpectatorVotes = 0;
-            for (Entry<Player, Integer> vote : answer.getVotes().entrySet()) {
-              if (vote.getKey().getID() >= 0) {
-                jsonPlayer = new JSONObject();
-                jsonPlayer.put("value", String.format("%s - %d",
-                    vote.getKey().getName(), vote.getValue()));
-                jsonPlayer.put("color", vote.getKey().getColor());
-                jsonVotes.put(jsonPlayer);
-              }
-              else
-                nSpectatorVotes++;
-            }
-            if (nSpectatorVotes > 0 && game.getSpectators().size() > 0) {
-              Player spectator = game.getSpectators().get(0);
-              jsonPlayer = new JSONObject();
-              jsonPlayer.put("value", String.format("%s - %d",
-                  spectator.getName(), nSpectatorVotes));
-              jsonPlayer.put("color", spectator.getColor());
-              jsonVotes.put(jsonPlayer);
-            }
-            jsonAnswer.put("votes", jsonVotes);
-            jsonAnswers.put(jsonAnswer);
-          }
-          info.put("answers", jsonAnswers);
-
+          GamePane.this.setContent(question.getResultsPane());
         }
         else if (state.equalsIgnoreCase("Round Results")) {
-          info = new JSONObject();
-          info.put("action", "info");
-          info.put("info", "round");
           FlowPane scores = new FlowPane();
           scores.setId("scores");
-          JSONArray jsonPlayers = new JSONArray();
           for (Player p : GamePane.this.game.getPlayers()) {
             Node scoreNode = p.getNameLabel(String.valueOf(p.getPoints()));
             scores.getChildren().add(scoreNode);
-            JSONObject player = new JSONObject();
-            player.put("name",
-                String.format("%s - %d", p.getName(), p.getPoints()));
-            player.put("color", p.getColor());
-            jsonPlayers.put(player);
           }
           GamePane.this.setContent(scores);
-          info.put("players", jsonPlayers);
-
         }
         else if (state.equalsIgnoreCase("Voting")) {
-          info = new JSONObject();
-          info.put("action", "info");
-          info.put("info", "none");
           GamePane.this.setContent(
               GamePane.this.game.getRound().getQuestion().getVotingPane());
         }

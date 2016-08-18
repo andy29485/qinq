@@ -90,16 +90,9 @@ public class GameServer {
       e.printStackTrace();
     }
 
-    WebSocketHandler wsHandler = new WebSocketHandler() {
-      @Override
-      public void configure(WebSocketServletFactory factory) {
-        factory.register(MySocketHandler.class);
-      }
-    };
-
     HandlerList handlers = new HandlerList();
-    handlers.setHandlers(
-        new Handler[] { new MyHandler(), resource_handler, wsHandler });
+    handlers.setHandlers(new Handler[] { new MyHandler(), resource_handler,
+        new MySocketHandler() });
     this.server.setHandler(handlers);
 
     try {

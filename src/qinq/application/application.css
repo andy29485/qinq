@@ -80,7 +80,7 @@ Label {
   -fx-alignment: bottom-center;
 }
 .answer-node .player-label {
-  -fx-font: 17px Serif;
+  -fx-font: 14px Serif;
   -fx-min-width: 20px;
   -fx-max-width: 117px;
   -fx-padding: 0px 9px 0px 9px;
@@ -90,6 +90,7 @@ Label {
   -fx-alignment: center;
 }
 .answer-node .score {
+  -fx-font-size: 12px;
   -fx-max-width: 70px;
 }
 .answer-node > Label {

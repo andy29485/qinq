@@ -34,6 +34,8 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.json.JSONObject;
+
 import qinq.application.GamePane;
 import qinq.application.GameUI;
 
@@ -230,7 +232,17 @@ public class Game extends GameObject {
           Game.this.currentRound.saveResults(writer);
 
           Game.this.currentRound = null; // End the game
+          for (Player p : Game.this.players) {
+            p.getSocket()
+                .sendText(new JSONObject().put("action", "end").toString());
+          }
+          for (Player p : Game.this.spectators) {
+            p.getSocket()
+                .sendText(new JSONObject().put("action", "end").toString());
+          }
+
           Game.this.players = new ArrayList<Player>();
+          Game.this.spectators = new ArrayList<Player>();
           display.refresh();
 
           if (writer != null) {

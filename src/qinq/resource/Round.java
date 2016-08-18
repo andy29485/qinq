@@ -27,6 +27,9 @@ import java.util.concurrent.ThreadLocalRandom;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import qinq.application.GamePane;
 
 /**
@@ -235,13 +238,19 @@ public class Round {
       this.display.refresh();
     }
     this.dTime = 0;
-    if (tc == null || !tc.canMoveOn()) {
-      try {
-        Thread.sleep(Round.nExtraWaitTime);
-      }
-      catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+
+    try {
+      Thread.sleep(Round.nExtraWaitTime);
+    }
+    catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+    for (Player p : this.players) {
+      p.getSocket().sendText(new JSONObject().put("action", "time").toString());
+    }
+    for (Player p : this.spectators) {
+      p.getSocket().sendText(new JSONObject().put("action", "time").toString());
     }
   }
 
@@ -251,7 +260,15 @@ public class Round {
    */
   public void answer() {
     this.display.changeState("Answering");
-    this.wait(Question.getAnswerTime() * Question.getNumAnswers(), () -> {
+    this.dTime = Question.getAnswerTime() * Question.getNumAnswers();
+    for (Player p : this.players) {
+      if (p.getAnswers().size() > 0)
+        p.getAnswers().get(0).send(this.dTime);
+    }
+    for (Player p : this.spectators) {
+      p.getSocket().sendText(this.display.getJson().toString());
+    }
+    this.wait(this.dTime, () -> {
       for (Player p : this.players)
         if (p.getAnswers().size() > 0)
           return false;
@@ -270,15 +287,49 @@ public class Round {
       this.display.changeState("Voting");
 
       this.question = question;
+      this.dTime = Question.getVoteTime() * this.question.getAnswers().size();
       if (this.question.canVote()) {
         this.setVotes();
-        this.wait(Question.getVoteTime() * this.question.getAnswers().size(),
-            () -> {
-              for (Player p : this.players)
-                if (p.getVotes() > 0)
-                  return false;
-              return true;
-            });
+        for (Player p : this.players) {
+          JSONObject jsonOut = new JSONObject();
+          jsonOut.put("action", "vote");
+          jsonOut.put("time", this.dTime);
+          jsonOut.put("question", question.getQuestion());
+          jsonOut.put("votes", p.getVotes());
+          if (p.getVotes() > 0) {
+            JSONArray jSONArray = new JSONArray();
+            for (Answer tmp : question.getAnswers()) {
+              if (tmp.getPlayer() != p && !tmp.getAnswer().isEmpty())
+                jSONArray.put(new JSONObject().put("answer", tmp.getAnswer())
+                    .put("aid", tmp.getID()));
+            }
+            jsonOut.put("answers", jSONArray);
+          }
+          p.getSocket().sendText(jsonOut.toString());
+        }
+        for (Player p : this.spectators) {
+          if (p.getVotes() > 0) {
+            JSONObject jsonOut = new JSONObject();
+            jsonOut.put("action", "vote");
+            jsonOut.put("time", this.getTime());
+            jsonOut.put("question", question.getQuestion());
+            jsonOut.put("votes", p.getVotes());
+            JSONArray jSONArray = new JSONArray();
+            for (Answer tmp : question.getAnswers()) {
+              if (tmp.getPlayer() != p && !tmp.getAnswer().isEmpty())
+                jSONArray.put(new JSONObject().put("answer", tmp.getAnswer())
+                    .put("aid", tmp.getID()));
+            }
+            jsonOut.put("answers", jSONArray);
+            p.getSocket().sendText(jsonOut.toString());
+          }
+        }
+        this.wait(this.dTime, () -> {
+          for (Player p : this.players)
+            if (p.getVotes() > 0)
+              return false;
+          return true;
+        });
       }
       this.displayResults();
       this.question = null;
@@ -291,13 +342,18 @@ public class Round {
    * If current questions is null, display the results for this round
    */
   public void displayResults() {
+    this.dTime = 12;
     if (this.question != null) {
       this.display.changeState("Question Results");
     }
     else {
       this.display.changeState("Round Results");
     }
-    this.wait(12, null);
+    for (Player p : this.players)
+      p.getSocket().sendText(this.display.getJson().toString());
+    for (Player p : this.spectators)
+      p.getSocket().sendText(this.display.getJson().toString());
+    this.wait(this.dTime, null);
   }
 
   /**

@@ -38,9 +38,9 @@ public class Player extends GameObject {
    */
   private String                   strName;
   /**
-   * The IP used to connect, primarily used to reconnect
+   * The IP address used to connect, primarily used to reconnect
    */
-  private String                   strIp;
+  private String                   strIP;
   /**
    * List of Answers for the current Game/Round
    */
@@ -57,6 +57,11 @@ public class Player extends GameObject {
    * Colour of the player.
    */
   private String                   color;
+
+  /**
+   * WebSocket used to interact with the players web interface
+   */
+  private QinqWebSocketAddapter    socket;
   /**
    * Total number of players, use for generating player IDs.
    */
@@ -86,14 +91,14 @@ public class Player extends GameObject {
    *
    * @param strName
    *          nick name of the player
-   * @param ip
-   *          player's ip address
+   * @param strIP
+   *          player's IP address
    */
-  public Player(String strName, String ip) {
+  public Player(String strName, String strIP) {
     super(strName.isEmpty() ? -++Player.nPlayers : Player.nPlayers++);
     this.answers = new ArrayList<Answer>();
     this.strName = strName.isEmpty() ? "Spectator" : strName;
-    this.strIp = ip;
+    this.strIP = strIP;
     this.nPoints = 0;
     this.setVotes(0);
     if (strName.isEmpty())
@@ -158,22 +163,22 @@ public class Player extends GameObject {
   }
 
   /**
-   * Get the player IP address
+   * Get the player's IP address
    *
-   * @return the IP to set
+   * @return the IP address to set
    */
   public String getIp() {
-    return this.strIp;
+    return this.strIP;
   }
 
   /**
-   * Set the player IP address
+   * Set the player's IP address
    *
-   * @param strIp
-   *          the IP to set
+   * @param strIP
+   *          the IP address to set
    */
-  public void setIp(String strIp) {
-    this.strIp = strIp;
+  public void setIp(String strIP) {
+    this.strIP = strIP;
   }
 
   /**
@@ -237,5 +242,24 @@ public class Player extends GameObject {
    */
   public void addPoints(int nPoints) {
     this.nPoints += nPoints;
+  }
+
+  /**
+   * Get the WebSocket
+   *
+   * @return the socket
+   */
+  public QinqWebSocketAddapter getSocket() {
+    return socket;
+  }
+
+  /**
+   * Set the WebSocket
+   *
+   * @param socket
+   *          the socket to set
+   */
+  public void setSocket(QinqWebSocketAddapter socket) {
+    this.socket = socket;
   }
 }

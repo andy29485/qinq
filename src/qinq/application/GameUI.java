@@ -74,6 +74,15 @@ public class GameUI extends ScrollPane {
 
   public void exit() {
     this.server.stop();
+    Platform.runLater(new Runnable() {
+      @Override
+      public void run() {
+        for (Player p : GameUI.this.game.getPlayers())
+          p.getSocket().close();
+        for (Player p : GameUI.this.game.getSpectators())
+          p.getSocket().close();
+      }
+    });
     System.exit(0);
   }
 

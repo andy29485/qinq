@@ -208,13 +208,25 @@ public class Question extends GameObject {
    *
    * @return a pane with the results for this question
    */
-  public Node getResultsPane(int nPlayers) {
+  public Node getResultsPane() {
     // TODO animation?
     BorderPane results = new BorderPane();
     results.setTop(new Label(this.strValue));
 
     FlowPane answers = new FlowPane();
     answers.getStyleClass().add("answer-pane");
+
+    for (Answer answer : this.lAnswers) {
+      answer.getPlayer().addPoints(answer.getScore());
+      answers.getChildren().add(answer.getFinalAnswer(answer.getScoreStr()));
+    }
+
+    results.setCenter(answers);
+
+    return results;
+  }
+
+  public void calcResults(int nPlayers) {
     int nTotalPoints = 0;
     for (Answer answer : this.lAnswers)
       nTotalPoints += answer.getNumVotes();
@@ -227,7 +239,7 @@ public class Question extends GameObject {
 
         if (answer.getNumVotes() == nTotalPoints) {
           answer.setScore(answer.getScore() * 2);
-          strDisplay += " (double)";
+          strDisplay += " (x2)";
         }
       }
       else if (!answer.getAnswer().isEmpty()) {
@@ -236,11 +248,7 @@ public class Question extends GameObject {
       }
 
       answer.getPlayer().addPoints(answer.getScore());
-      answers.getChildren().add(answer.getFinalAnswer(strDisplay));
+      answer.setScoreStr(strDisplay);
     }
-
-    results.setCenter(answers);
-
-    return results;
   }
 }

@@ -12,16 +12,15 @@
   if (ob_get_level() == 0) ob_start();
   
   if(isset($_GET['name'])) {
-    $name = urldecode($_GET['name']);
-    $sql  = "SELECT uid FROM `game_names` WHERE name=? AND code=?;";
+    $name = substr(urldecode($_GET['name']), 0, 40);
+    $sql  = "SELECT uid FROM `game_names` WHERE name like ? AND code=?;";
 
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param('ss', substr($name, 0, 40), $code);
+    //error_log($sql);
     
-    $stmt->execute();
-    $result = $stmt->get_result();
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(array($name, $code));
     
-    while ($row = $result->fetch_assoc()) {
+    while ($row = $stmt->fetch()) {
       $id = (int)$row['uid'];
       
       if($id !== 0) { 
@@ -31,38 +30,33 @@
         
         $sql  = "DELETE FROM `game_names` WHERE name=? AND code=?;";
 
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param('ss', substr($name, 0, 40), $code);
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($name, $code));
         
-        $stmt->execute();
         exit;
       }
     }
-    
-    $sql  = "SELECT message FROM `game_messages` WHERE uid=? AND code=?;";
-
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param('is', $id, $code);
-    
-    $stmt->execute();
-    $result = $stmt->get_result();
-    
-    while ($row = $result->fetch_assoc()) {
-      $message = $row['message'];
-      
-      echo $message."\n";
-      ob_flush();
-      flush();
-      
-      $sql  = "DELETE FROM `game_messages` WHERE uid=? AND ";
-      $sql .= "message=? AND code=?;";
-
-      $stmt = $conn->prepare($sql);
-      $stmt->bind_param('iss', $id, $message, $code);
-      
-      $stmt->execute();
-    }
-    
     exit;
   }
+    
+  $sql  = "SELECT id,message FROM `game_messages` WHERE uid=? AND code=?;";
+
+  $stmt = $pdo->prepare($sql);
+  $stmt->execute(array($id, $code));
+  
+  while ($row = $stmt->fetch()) {
+    $message = $row['message'];
+    $mid = $row['id'];
+    
+    echo $message."\n";
+    ob_flush();
+    flush();
+    
+    $sql  = "DELETE FROM `game_messages` WHERE id=?;";
+
+    $stmt2 = $pdo->prepare($sql);
+    $stmt2->execute(array($mid));
+  }
+  
+  exit;
 ?>

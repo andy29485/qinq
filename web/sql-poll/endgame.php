@@ -11,13 +11,11 @@
   }
   
   $sql = "DELETE FROM `games` WHERE code='".$code."'";
-  $conn->query($sql); 
+  $pdo->query($sql);
   
   $sql = "DELETE FROM `game_names` WHERE code='".$code."'";
-  $conn->query($sql); 
+  $pdo->query($sql);
   
   $sql = "DELETE FROM `game_messages` WHERE code='".$code."'";
-  $conn->query($sql); 
-  
-  $conn->close();
+  $pdo->query($sql);
 ?>

@@ -81,13 +81,14 @@ function getInfo() {
   else {
     url += "&id="+player_id;
   }
+  console.log('URL: ' + url);
   data = httpGet(url).split('\n');;
   for(var i = 0;i < data.length;i++){
     if(data[i]) {
       parseData(data[i]);
     }
   }
-  info_timer = setTimeout(getInfo, 500);
+  info_timer = setTimeout(getInfo, 400);
 }
 
 function parseData(data) {

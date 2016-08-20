@@ -6,15 +6,21 @@
   
   include 'connect.php';
   //ini_set('display_errors', 1);
-  set_time_limit(20);
+  set_time_limit(10);
   if (ob_get_level() == 0) ob_start();
   
   function getCode() {
+    require 'connect.php';
+    
     $characters = 'ABCDEFGHKLMNPQRSTUVXYZ';
-    $randstring = '';
-    while(strlen($randstring) < 4) {
-      $randstring .= substr($characters, rand(0, strlen($characters)), 1);
-    }
+    do {
+      $randstring = '';
+      while(strlen($randstring) < 4) {
+        $randstring .= substr($characters, rand(0, strlen($characters)), 1);
+      }
+      $sql = "SELECT count(*) FROM `games` WHERE code='{$randstring}'";
+      $count = $pdo->query($sql)->fetchColumn();
+    } while($count > 0);
     return $randstring;
   }
   
@@ -25,6 +31,7 @@
   socket_bind($sock_main, 0) or die('Could not bind to address');
   socket_getsockname($sock_main, $address, $port);
   //error_log("listening on ".$port);
+  echo "sockets\n";
   echo $port."\n";
   
   ob_flush();
@@ -43,12 +50,12 @@
   
   $code = getCode();
   
-  $sql  = "INSERT INTO `games` (code, address)";
+  $sql  = "INSERT INTO `games` (code, port)";
   $sql .= " VALUES (\"".$code."\", \"".$port."\");";
 
   //error_log($sql);
 
-  $conn->query($sql);  
+  $pdo->query($sql);
   
   //error_log("sql done");
   
@@ -62,6 +69,7 @@
   $writeResult = TRUE;
   
   do {
+    set_time_limit(10);
     usleep(4000);
     //error_log("loop");
     $changed = $cls;
@@ -192,9 +200,8 @@
   }
   
   $sql = "DELETE FROM `games` WHERE code='".$code."'";
-  $conn->query($sql);
+  $pdo->query($sql);
   
-  $conn->close();
   socket_close($m_sock);
   socket_close($client_main);
   socket_close($sock_main);

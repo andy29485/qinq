@@ -12,7 +12,5 @@
   }
   
   $sql = "DELETE FROM `games` WHERE code='".$code."'";
-  $conn->query($sql); 
-  
-  $conn->close();
+  $pdo->query($sql);
 ?>

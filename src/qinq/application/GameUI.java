@@ -18,10 +18,6 @@
 
 package qinq.application;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,18 +93,6 @@ public class GameUI extends ScrollPane {
     List<String> questions = new ArrayList<String>();
     for (String question : this.options.getQuestions())
       questions.add(question);
-
-    InputStream in = this.getClass()
-        .getResourceAsStream("/qinq/resource/questions/misc.txt");
-    BufferedReader br = new BufferedReader(new InputStreamReader(in));
-    String question;
-    try {
-      while ((question = br.readLine()) != null)
-        questions.add(question);
-    }
-    catch (IOException e) {
-      e.printStackTrace();
-    }
 
     GamePane display = new GamePane(game);
     Platform.runLater(new Runnable() {

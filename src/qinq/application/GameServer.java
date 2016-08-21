@@ -150,18 +150,26 @@ public class GameServer {
    * @return string containing the address/port of the website part of the game
    */
   public String getAddress() {
-    if (((ServerConnector) this.server.getConnectors()[0])
-        .getLocalPort() == -1) {
+    if (this.getPort() == -1) {
       return "There was an error...";
     }
     try {
       return String.format("%s:%d", getCurrentIp().getHostAddress(),
-          ((ServerConnector) this.server.getConnectors()[0]).getLocalPort());
+          this.getPort());
     }
     catch (SocketException e) {
       e.printStackTrace();
       return "Unknown IP, are you connected to a network?";
     }
+  }
+
+  /**
+   * Get the port that the game is running on
+   *
+   * @return the port that the game is running on
+   */
+  public int getPort() {
+    return ((ServerConnector) this.server.getConnectors()[0]).getLocalPort();
   }
 
   /**

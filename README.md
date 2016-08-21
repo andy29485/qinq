@@ -57,3 +57,6 @@ This project is distributed under the GPLv3 Licence.
 | End timer if action was complete | complete |
 | Allow kicking of players | complete |
 | Make web-end look **even** better | dropped |
+
+## Dependencies(for compilation)
+- [Jetty 9] (http://www.eclipse.org/jetty)

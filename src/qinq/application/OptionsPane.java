@@ -32,6 +32,7 @@ import java.util.Set;
 
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -50,12 +51,22 @@ import qinq.resource.Question;
 import qinq.resource.Round;
 
 public class OptionsPane extends BorderPane {
-  TextArea                   questions;
-  Map<CheckBox, Set<String>> categories;
-  FlowPane                   categoryPane;
-  VBox                       options;
+  private TextArea                   questions;
+  private Map<CheckBox, Set<String>> categories;
+  private FlowPane                   categoryPane;
+  private VBox                       options;
+  private Button                     remote_button;
+  private TextField                  remoteurl_tb;
+  private QinqConnector              remote;
+  private GameServer                 server;
+  private Game                       game;
+  private GameUI                     root;
 
-  public OptionsPane(GameUI root, Game game) {
+  public OptionsPane(GameUI root, Game game, GameServer server) {
+    this.server = server;
+    this.game = game;
+    this.root = root;
+
     Label header = new Label("Game Options v2.6.2");
     header.getStyleClass().add("header");
 
@@ -131,6 +142,12 @@ public class OptionsPane extends BorderPane {
       Game.setLogsDir(newValue);
     });
 
+    this.remote_button = new Button("Start");
+    this.remoteurl_tb = new TextField(QinqConnector.REMOTE_SERVER_DEFAULT);
+    this.remote_button.setOnAction(e -> this.startRemoteConn());
+
+    this.remote = null;
+
     this.questions.setTooltip(new Tooltip("One Question per Line"));
     this.categoryPane.setId("categories:");
 
@@ -145,12 +162,37 @@ public class OptionsPane extends BorderPane {
         new HBox(20, new Label("Min Players:"), min_players),
         new HBox(20, new Label("Max Players:"), max_players),
         new HBox(20, new Label("Extra Wait Time:"), wait_time),
-        new HBox(20, logs_cb, logs_tb));
+        new HBox(20, logs_cb, logs_tb),
+        new HBox(20, new Label("Remote Server Connector:"), this.remoteurl_tb,
+            this.remote_button));
 
     this.setTop(header);
     this.setCenter(this.options);
     this.setBottom(bottom);
     this.refresh();
+  }
+
+  public void startRemoteConn() {
+    this.remote = new QinqConnector(this.remoteurl_tb.getText(), this.game);
+    String url = this.remote.start(this.server.getPort());
+    if (!url.isEmpty()) {
+      this.root.setRemoteUrl(url);
+      this.remote_button.setText("Stop");
+      this.remote_button.setOnAction(e -> this.stopRemoteConn());
+    }
+    else {
+      new Alert(Alert.AlertType.ERROR, "Could not connect to server")
+          .showAndWait();
+    }
+  }
+
+  public void stopRemoteConn() {
+    if (this.remote != null) {
+      this.remote.stop();
+    }
+    this.root.removeRemoteUrl();
+    this.remote_button.setText("Start");
+    this.remote_button.setOnAction(e -> this.startRemoteConn());
   }
 
   public Set<String> getQuestions() {

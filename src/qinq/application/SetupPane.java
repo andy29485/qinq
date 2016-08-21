@@ -27,28 +27,30 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import qinq.resource.Game;
 import qinq.resource.Player;
 
 public class SetupPane extends BorderPane {
-  private Label    addressLabel;
-  private FlowPane players;
-  private Game     game;
+  private VBox       addressLabels;
+  private FlowPane   players;
+  private Game       game;
+  private GameServer server;
 
   public SetupPane(GameUI root, GameServer server, Game game) {
-    this.addressLabel = new Label(server.getAddress());
+    this.addressLabels = new VBox();
     this.players = new FlowPane();
     this.game = game;
+    this.server = server;
+
+    this.resetAddresses();
 
     this.setId("setup-pane");
     this.players.getStyleClass().add("players");
-
-    this.addressLabel.setTooltip(new Tooltip(
-        "Make sure to include the port\n (The part after the colon)"));
 
     HBox top = new HBox(5);
     HBox bottom = new HBox(20);
@@ -60,10 +62,10 @@ public class SetupPane extends BorderPane {
     Button buttonOpt = new Button("Options");
     Button buttonExit = new Button("Exit");
 
-    this.addressLabel.setId("address-label");
+    this.addressLabels.setId("address-labels");
     top.getStyleClass().add("header");
     top.getChildren().add(new Label("Go to: "));
-    top.getChildren().add(this.addressLabel);
+    top.getChildren().add(this.addressLabels);
     top.getChildren().add(new Label(" to start playing"));
 
     buttonStart.setOnAction(e -> {
@@ -86,6 +88,19 @@ public class SetupPane extends BorderPane {
     this.setBottom(bottom);
   }
 
+  public void resetAddresses() {
+    this.addressLabels.getChildren().clear();
+    this.addAddress(this.server.getAddress());
+  }
+
+  public void addAddress(String address) {
+    TextField copyable = new TextField(address);
+    copyable.setEditable(false);
+    copyable.getStyleClass().add("copyable-label");
+    this.addressLabels.getChildren().add(copyable);
+    this.addressLabels.setMaxWidth(Double.MAX_VALUE);
+  }
+
   public void addPlayer(Player p) {
     Platform.runLater(new Runnable() {
       @Override
@@ -97,8 +112,7 @@ public class SetupPane extends BorderPane {
           alert.setHeaderText("Player will be Kicked");
           alert.setContentText("Are you sure you wish to kick this player?");
           if (alert.showAndWait().get() == ButtonType.OK) { // ... user chose OK
-            p.getSocket()
-                .sendText(new JSONObject().put("action", "kick").toString());
+            p.getSocket().sendText(new JSONObject().put("action", "kick"));
             SetupPane.this.players.getChildren().remove(player);
             SetupPane.this.game.getPlayers().remove(p);
           }

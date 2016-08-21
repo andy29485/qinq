@@ -41,7 +41,7 @@ public class GameUI extends ScrollPane {
     this.game = game;
     this.server = server;
     this.setup = new SetupPane(this, server, game);
-    this.options = new OptionsPane(this, game);
+    this.options = new OptionsPane(this, game, server);
 
     this.game.setGameUI(this);
 
@@ -73,8 +73,7 @@ public class GameUI extends ScrollPane {
   }
 
   public void exit() {
-    this.server.stop();
-    Platform.runLater(new Runnable() {
+    new Thread(new Runnable() {
       @Override
       public void run() {
         for (Player p : GameUI.this.game.getPlayers())
@@ -82,7 +81,9 @@ public class GameUI extends ScrollPane {
         for (Player p : GameUI.this.game.getSpectators())
           p.getSocket().close();
       }
-    });
+    }).start();
+    this.server.stop();
+    this.options.stopRemoteConn();
     System.exit(0);
   }
 
@@ -131,5 +132,14 @@ public class GameUI extends ScrollPane {
         this.goToSetup();
         break;
     }
+  }
+
+  public void setRemoteUrl(String url) {
+    this.setup.resetAddresses();
+    this.setup.addAddress(url);
+  }
+
+  public void removeRemoteUrl() {
+    this.setup.resetAddresses();
   }
 }

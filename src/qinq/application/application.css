@@ -1,8 +1,9 @@
 #root{
   -fx-padding: 8;
 }
-#address-label {
+#address-labels {
   -fx-background-color: #BBB;
+  -fx-alignment: center;
 }
 #categories {
   -fx-vgap: 10;
@@ -32,6 +33,12 @@ Label {
   -fx-wrap-text: true;
   -fx-text-overrun: ellipsis;
   -fx-max-height: 24px;
+}
+.copyable-label, .copyable-label:focused {
+  -fx-font-size: 13px;
+  -fx-alignment: center;
+  -fx-background-color: transparent ;
+  -fx-background-insets: 0px ;
 }
 
 #scores {

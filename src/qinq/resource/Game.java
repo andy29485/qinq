@@ -233,12 +233,10 @@ public class Game extends GameObject {
 
           Game.this.currentRound = null; // End the game
           for (Player p : Game.this.players) {
-            p.getSocket()
-                .sendText(new JSONObject().put("action", "end").toString());
+            p.getSocket().sendText(new JSONObject().put("action", "end"));
           }
           for (Player p : Game.this.spectators) {
-            p.getSocket()
-                .sendText(new JSONObject().put("action", "end").toString());
+            p.getSocket().sendText(new JSONObject().put("action", "end"));
           }
 
           Game.this.players = new ArrayList<Player>();

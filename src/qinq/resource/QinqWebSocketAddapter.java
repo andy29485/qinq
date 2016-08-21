@@ -28,11 +28,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import qinq.application.GamePane;
+import qinq.application.QinqConnector;
 
 public class QinqWebSocketAddapter extends WebSocketAdapter {
-  private Session session;
-  private Game    game;
-  private Player  player;
+  private Session       session;
+  private Game          game;
+  private Player        player;
+  private QinqConnector conn;
 
   /**
    * Create a socket attached to the game
@@ -42,6 +44,19 @@ public class QinqWebSocketAddapter extends WebSocketAdapter {
    */
   public QinqWebSocketAddapter(Game game) {
     this.game = game;
+  }
+
+  /**
+   * Create a socket attached to the game, that gets stuff from a web server
+   *
+   * @param game
+   *          pertaining to this socket
+   * @param conn
+   *          Connection to the web server
+   */
+  public QinqWebSocketAddapter(Game game, QinqConnector conn) {
+    this.game = game;
+    this.conn = conn;
   }
 
   @Override
@@ -62,16 +77,22 @@ public class QinqWebSocketAddapter extends WebSocketAdapter {
 
   @Override
   public void onWebSocketText(String message) {
-    JSONObject jsonOut = new JSONObject();
-    JSONObject json;
-
     try {
-      json = new JSONObject(message);
+      this.onMessage(new JSONObject(message));
     }
     catch (JSONException e) {
       e.printStackTrace();
-      return;
     }
+  }
+
+  /**
+   * Process message that was sent
+   *
+   * @param json
+   *          input received
+   */
+  public void onMessage(JSONObject json) {
+    JSONObject jsonOut = new JSONObject();
 
     switch (json.getString("action").toLowerCase()) {
       case "create user":
@@ -89,15 +110,15 @@ public class QinqWebSocketAddapter extends WebSocketAdapter {
         return;
     }
 
-    this.sendText(jsonOut.toString());
-
+    this.sendText(jsonOut);
   }
 
   /**
    * Close the WebSocket
    */
   public void close() {
-    this.session.close();
+    if (this.session != null)
+      this.session.close();
   }
 
   /**
@@ -138,9 +159,9 @@ public class QinqWebSocketAddapter extends WebSocketAdapter {
 
     GamePane display = this.game.getRound().getDisplay();
     for (Player p : this.game.getPlayers())
-      p.getSocket().sendText(display.getJson().toString());
+      p.getSocket().sendText(display.getJson());
     for (Player p : this.game.getSpectators())
-      p.getSocket().sendText(display.getJson().toString());
+      p.getSocket().sendText(display.getJson());
 
     if (answer.getPlayer().getAnswers().size() > 0) {
       Round round = this.game.getRound();
@@ -159,8 +180,12 @@ public class QinqWebSocketAddapter extends WebSocketAdapter {
    */
   private void createUser(JSONObject json) {
     JSONObject jsonOut = new JSONObject();
-    this.player = this.game.addPlayer(json.getString("name").toUpperCase(),
-        this.session.getRemoteAddress().getAddress().getHostAddress());
+    String address = "remote connection";
+    if (this.conn == null) {
+      address = this.session.getRemoteAddress().getAddress().getHostAddress();
+    }
+    this.player =
+        this.game.addPlayer(json.getString("name").toUpperCase(), address);
     jsonOut.put("action", "creating");
     if (this.player != null) {
       jsonOut.put("created", "true");
@@ -172,7 +197,7 @@ public class QinqWebSocketAddapter extends WebSocketAdapter {
     else {
       jsonOut.put("created", "false");
     }
-    this.sendText(jsonOut.toString());
+    this.sendText(jsonOut);
 
     Question question;
     if (this.player != null && this.game.getRound() != null) {
@@ -195,10 +220,10 @@ public class QinqWebSocketAddapter extends WebSocketAdapter {
           }
           jsonOut.put("answers", jSONArray);
         }
-        this.sendText(jsonOut.toString());
+        this.sendText(jsonOut);
       }
       else {
-        this.sendText(this.game.getRound().getDisplay().getJson().toString());
+        this.sendText(this.game.getRound().getDisplay().getJson());
       }
     }
   }
@@ -210,11 +235,17 @@ public class QinqWebSocketAddapter extends WebSocketAdapter {
    *          string to send
    * @return true on success
    */
-  public boolean sendText(String message) {
+  public boolean sendText(JSONObject message) {
+    if (this.conn != null) {
+      message.put("uid", player.getID());
+      System.out.println("Send: " + message.toString());
+      this.conn.send(message.toString());
+      return true;
+    }
     if (this.session == null)
       return false;
     try {
-      this.session.getRemote().sendString(message);
+      this.session.getRemote().sendString(message.toString());
       return true;
     }
     catch (IOException | WebSocketException e) {

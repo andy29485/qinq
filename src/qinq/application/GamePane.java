@@ -104,7 +104,6 @@ public class GamePane extends BorderPane {
 
   public synchronized JSONObject getJson() {
     this.refresh();
-    System.out.println("Send: " + info.toString());
     return info;
   }
 

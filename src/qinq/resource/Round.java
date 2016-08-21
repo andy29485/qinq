@@ -247,10 +247,10 @@ public class Round {
     }
 
     for (Player p : this.players) {
-      p.getSocket().sendText(new JSONObject().put("action", "time").toString());
+      p.getSocket().sendText(new JSONObject().put("action", "time"));
     }
     for (Player p : this.spectators) {
-      p.getSocket().sendText(new JSONObject().put("action", "time").toString());
+      p.getSocket().sendText(new JSONObject().put("action", "time"));
     }
   }
 
@@ -266,7 +266,7 @@ public class Round {
         p.getAnswers().get(0).send(this.dTime);
     }
     for (Player p : this.spectators) {
-      p.getSocket().sendText(this.display.getJson().toString());
+      p.getSocket().sendText(this.display.getJson());
     }
     this.wait(this.dTime, () -> {
       for (Player p : this.players)
@@ -305,7 +305,7 @@ public class Round {
             }
             jsonOut.put("answers", jSONArray);
           }
-          p.getSocket().sendText(jsonOut.toString());
+          p.getSocket().sendText(jsonOut);
         }
         for (Player p : this.spectators) {
           if (p.getVotes() > 0) {
@@ -321,7 +321,7 @@ public class Round {
                     .put("aid", tmp.getID()));
             }
             jsonOut.put("answers", jSONArray);
-            p.getSocket().sendText(jsonOut.toString());
+            p.getSocket().sendText(jsonOut);
           }
         }
         this.wait(this.dTime, () -> {
@@ -350,9 +350,9 @@ public class Round {
       this.display.changeState("Round Results");
     }
     for (Player p : this.players)
-      p.getSocket().sendText(this.display.getJson().toString());
+      p.getSocket().sendText(this.display.getJson());
     for (Player p : this.spectators)
-      p.getSocket().sendText(this.display.getJson().toString());
+      p.getSocket().sendText(this.display.getJson());
     this.wait(this.dTime, null);
   }
 

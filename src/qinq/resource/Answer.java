@@ -276,6 +276,6 @@ public class Answer extends GameObject {
     jsonOut.put("time", timer);
     jsonOut.put("aid", this.getID());
     jsonOut.put("question", this.getQuestion());
-    this.p.getSocket().sendText(jsonOut.toString());
+    this.p.getSocket().sendText(jsonOut);
   }
 }

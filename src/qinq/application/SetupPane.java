@@ -31,6 +31,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import qinq.resource.Game;
 import qinq.resource.Player;
@@ -68,6 +69,8 @@ public class SetupPane extends BorderPane {
     top.getChildren().add(this.addressLabels);
     top.getChildren().add(new Label(" to start playing"));
 
+    HBox.setHgrow(this.addressLabels, Priority.ALWAYS);
+
     buttonStart.setOnAction(e -> {
       root.startGame();
     });
@@ -98,7 +101,6 @@ public class SetupPane extends BorderPane {
     copyable.setEditable(false);
     copyable.getStyleClass().add("copyable-label");
     this.addressLabels.getChildren().add(copyable);
-    this.addressLabels.setMaxWidth(Double.MAX_VALUE);
   }
 
   public void addPlayer(Player p) {

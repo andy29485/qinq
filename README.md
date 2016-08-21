@@ -42,12 +42,24 @@ This project is distributed under the GPLv3 Licence.
    belongs in
    - The same question can exist in multiple categories
 
+### Start internet session(slower)
+Sometimes you want to play with people that are not on your local network
+(aka another house). For this to work there needs to be a web-server that
+connects non-local clients with your computer. See `web/` dir for more info.
+1. Go to options.
+2. Find the `Remote Server Connector`.
+3. (opt) Change the URL to point to your desired server.
+4. Click Start
+5. Click Back
+  - A new URL should have appeared in the gray box.
+6. Have clients direct their Web Browsers to that URL.
+
 ## TODO
 | Item | Status |
 | ---- | :----: |
 | Come up with more questions | outsourcing |
 | Player images - not just colours | considering |
-| Allow internet based connecting(non-local) | considering |
+| Allow internet based connecting(non-local) | complete |
 | View results on web-end | complete |
 | Round/Game results | complete |
 | Scores | complete |

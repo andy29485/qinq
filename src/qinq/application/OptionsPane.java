@@ -67,7 +67,7 @@ public class OptionsPane extends BorderPane {
     this.game = game;
     this.root = root;
 
-    Label header = new Label("Game Options v2.6.2");
+    Label header = new Label("Game Options v3.1.1");
     header.getStyleClass().add("header");
 
     HBox bottom = new HBox(20);

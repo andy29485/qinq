@@ -257,6 +257,9 @@ function onLoad() {
   document.getElementById("vote-box").style.display     = 'none';
   document.getElementById("name-error").style.display   = 'none';
   
+  var name = getUrlVar('name');
+
+  document.getElementById('name-field').value = name;
   document.getElementById('name-field').focus();
 
   document.getElementById("name-field").addEventListener("keypress",
@@ -332,6 +335,21 @@ function esc(html) {
   var div = document.createElement('div');
   div.appendChild(text);
   return div.innerHTML;
+}
+
+function getUrlVar(param) {
+  var hash;
+  var hashes = window.location.href.slice(window.location.href.indexOf('?')
+                                          + 1).split('&');
+
+  for(var i = 0; i < hashes.length; i++) {
+    hash = hashes[i].split('=');
+    if(hash[0].toLowerCase() == param.toLowerCase()) {
+      return decodeURIComponent(hash[1]);
+    }
+  }
+
+   return "";
 }
 
 function setTimer() {

@@ -20,8 +20,10 @@
           <label for="game-code">Game Code:</label>
           <input type="text" name="game-code" id="code-field"
             <?php 
-              if(isset($_GET['code']))
-              echo "value={$_GET['code']}";
+              if(isset($_GET['code'])) {
+              	$code = urldecode($_GET['code']);
+              	echo "value=\"{$code}\"";
+              }
             ?>
           >
         </p>
@@ -29,8 +31,10 @@
           <label for="player-name">Name:</label>
           <input type="text" name="player-name" id="name-field"
             <?php 
-              if(isset($_GET['name']))
-              echo "value={$_GET['name']}";
+              if(isset($_GET['name'])) {
+              	$name = urldecode($_GET['name']);
+              	echo "value=\"{$name}\"";
+              }
             ?>
           >
         </p>

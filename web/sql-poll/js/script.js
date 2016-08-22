@@ -101,7 +101,12 @@ function parseData(data) {
     return;
   }
   
-  json = JSON.parse(data);
+  try {
+    json = JSON.parse(evt.data);
+  }
+  catch(err) {
+    return;
+  }
   
   if(json['uid'] != player_id && player_id != 0) {
     return;
@@ -298,11 +303,11 @@ function parseData(data) {
       }
       break;
     case 'kick':
-      websocket.close();
+      ws.close();
       alert('You have been kicked');
       break;
     case 'end':
-      websocket.close();
+      ws.close();
       alert('Game has ended');
       break;
     default:

@@ -30,8 +30,14 @@ function createSocket(dataOnLoad) {
   };
   
   ws.onmessage = function (evt) {
-    json = JSON.parse(evt.data);
     console.log('GET: '+evt.data);
+    
+    try {
+      json = JSON.parse(evt.data);
+    }
+    catch(err) {
+      return;
+    }
     
     if('time' in json) {
       timer = +json['time']+1; //black magic

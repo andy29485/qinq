@@ -23,7 +23,7 @@ var state       = 'waiting';
 var timer_pid   = -1;
 
 function createSocket(dataOnLoad) {
-  var ws = new WebSocket("ws://" + location.host + '/websocket');
+  ws = new WebSocket("ws://" + location.host + '/websocket');
   
   ws.onopen = function() {
     sendData(dataOnLoad)

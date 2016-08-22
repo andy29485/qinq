@@ -141,28 +141,8 @@ public class QinqConnector {
   private void socket_run() {
     String message;
     try {
-      while ((message = br.readLine()) != null && this.nType == 1) {
-        try {
-          if (message.isEmpty())
-            continue;
-          JSONObject json = new JSONObject(message);
-          if (json.has("uid")) {
-            int id = json.getInt("uid");
-            Player p;
-            if ((p = QinqConnector.this.game.getPlayerById(id)) != null) {
-              p.getSocket().onMessage(json);
-            }
-          }
-          else if (json.has("action")
-              && json.getString("action").equalsIgnoreCase("create user")) {
-            QinqWebSocketAddapter socket =
-                new QinqWebSocketAddapter(game, QinqConnector.this);
-            socket.onMessage(json);
-          }
-        }
-        catch (JSONException e) {
-          System.out.println("Bad JSON: " + message);
-        }
+      while ((message = this.br.readLine()) != null && this.nType == 1) {
+        process_message(message);
       }
     }
     catch (IOException e) {
@@ -173,8 +153,33 @@ public class QinqConnector {
     }
   }
 
+  private void process_message(String message) {
+    try {
+      if (message.isEmpty())
+        return;
+      JSONObject json = new JSONObject(message);
+      if (json.has("uid")) {
+        int id = json.getInt("uid");
+        Player p;
+        if ((p = QinqConnector.this.game.getPlayerById(id)) != null) {
+          p.getSocket().onMessage(json);
+        }
+      }
+      else if (json.has("action")
+          && json.getString("action").equalsIgnoreCase("create user")) {
+        QinqWebSocketAddapter socket =
+            new QinqWebSocketAddapter(game, QinqConnector.this);
+        socket.onMessage(json);
+      }
+    }
+    catch (JSONException e) {
+      System.out.println("Bad JSON: " + message);
+    }
+  }
+
   private void poll_run() {
     try {
+      String message;
       while (this.nType == 2) {
         URL url = new URL(String.format("%sgetinfo.php?code=%s&id=0",
             this.strRemoteHost, this.strCode));
@@ -184,7 +189,9 @@ public class QinqConnector {
         conn.connect();
         InputStream is = conn.getInputStream();
         this.br = new BufferedReader(new InputStreamReader(is));
-        socket_run();
+        while ((message = this.br.readLine()) != null) {
+          process_message(message);
+        }
         this.br.close();
         Thread.sleep(200);
       }

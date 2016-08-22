@@ -214,7 +214,7 @@ public class Game extends GameObject {
           Game.this.currentRound.displayResults();
           Game.this.currentRound.saveResults(writer);
 
-          Game.this.currentRound = new Round(0, "Round 2", Game.this.players,
+          Game.this.currentRound = new Round(1, "Round 2", Game.this.players,
               Game.this.spectators, nonDupQuestions, display);
           Game.this.currentRound.answer();
           Game.this.currentRound.vote();

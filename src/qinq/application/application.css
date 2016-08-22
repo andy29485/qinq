@@ -8,6 +8,9 @@
 #categories {
   -fx-vgap: 10;
   -fx-hgap: 25;
+  -fx-padding: 10 15 15 10;
+  -fx-vgap: 10;
+  -fx-hgap: 10;
 }
 #options {
   -fx-spacing: 8;

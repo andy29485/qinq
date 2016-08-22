@@ -1,2 +1,4 @@
 misc.txt
+Create Your Own Jokes.txt
+Help Guides.txt
 debug.txt

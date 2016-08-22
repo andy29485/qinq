@@ -149,7 +149,7 @@ public class OptionsPane extends BorderPane {
     this.remote = null;
 
     this.questions.setTooltip(new Tooltip("One Question per Line"));
-    this.categoryPane.setId("categories:");
+    this.categoryPane.setId("categories");
 
     this.options.getChildren().addAll(new Separator(Orientation.HORIZONTAL),
         new Label("Categories:"), this.categoryPane);
@@ -232,7 +232,7 @@ public class OptionsPane extends BorderPane {
               new BufferedReader( // a check box
                   new InputStreamReader(this.getClass().getResourceAsStream(
                       "/qinq/resource/questions/" + category))),
-              tmp_categories, category);
+              tmp_categories, category.replaceAll("\\.txt$", ""));
         }
       }
     }
@@ -272,6 +272,8 @@ public class OptionsPane extends BorderPane {
     this.categories = tmp_categories;
     this.categoryPane.getChildren().clear();
     for (CheckBox cb : this.categories.keySet()) {
+      if (cb.getText().equalsIgnoreCase("debug"))
+        cb.setSelected(false);
       this.categoryPane.getChildren().add(cb);
     }
   }
@@ -302,7 +304,9 @@ public class OptionsPane extends BorderPane {
           }
         }
         // otherwise create a new category with said questions
-        categories.put(new CheckBox(category), questions);
+        CheckBox cb = new CheckBox(category);
+        cb.getStyleClass().add("category-box");
+        categories.put(cb, questions);
       }
     }
     catch (IOException e) {

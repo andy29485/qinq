@@ -380,6 +380,7 @@ public class Round {
       }
       writer.writeCharacters("\n      ");
       writer.writeEndElement();
+      writer.writeCharacters("\n      ");
       writer.writeStartElement("questions");
       for (Question q : this.questions) {
         writer.writeCharacters("\n        ");

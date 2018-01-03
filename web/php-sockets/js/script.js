@@ -91,9 +91,16 @@ function createSocket(send) {
     console.log('GET: '+evt.data);
     if(evt.data.toLowerCase() == 'end') {
       ws.close();
+      alert("game has endded");
       return;
     }
-    json = JSON.parse(evt.data);
+    
+    try {
+      json = JSON.parse(evt.data);
+    }
+    catch(err) {
+      return;
+    }
     
     if(json['uid'] != player_id && player_id != 0) {
       return;
@@ -290,11 +297,11 @@ function createSocket(send) {
         }
         break;
       case 'kick':
-        websocket.close();
+        ws.close();
         alert('You have been kicked');
         break;
       case 'end':
-        websocket.close();
+        ws.close();
         alert('Game has ended');
         break;
       default:

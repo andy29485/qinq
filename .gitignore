@@ -6,3 +6,4 @@ build.fxbuild
 .project
 .settings
 /src/org
+/resource/

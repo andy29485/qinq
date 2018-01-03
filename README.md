@@ -72,3 +72,6 @@ connects non-local clients with your computer. See `web/` dir for more info.
 
 ## Dependencies(for compilation)
 - [Jetty 9] (http://www.eclipse.org/jetty)
+  - put these jars in the `resource/`
+  - also extract the contents of the jars to the `resource` dir
+    - except the manafest dir
